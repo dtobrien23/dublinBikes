@@ -5,8 +5,7 @@ from sqlalchemy import create_engine, text
 import traceback
 from datetime import datetime
 
-#engine = create_engine("mysql+mysqldb://{}:{}@{}:{}/{}".format(dbinfo.USER, dbinfo.PASSWORD, dbinfo.DB_URI, dbinfo.PORT, dbinfo.DB_NAME), echo=True)
-engine = create_engine("mysql://{}:{}@{}:{}".format(dbinfo.USER, dbinfo.PASSWORD, dbinfo.DB_URI, dbinfo.PORT), echo=True)
+engine = create_engine("mysql+mysqldb://{}:{}@{}:{}/{}".format(dbinfo.USER, dbinfo.PASSWORD, dbinfo.DB_URI, dbinfo.PORT, dbinfo.DB_NAME), echo=True)
 
 with engine.begin() as connection:
     createDataBase = """CREATE DATABASE IF NOT EXISTS dublinbikes"""
