@@ -1,0 +1,9 @@
+body, html {
+    margin: 20px;
+    font-family: sans-serif;
+    background-color: black;
+    color:yellow;
+    lighting-color:blue;
+    outline-color:white;
+    text-align:center;
+}
