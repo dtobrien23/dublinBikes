@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Dublin Bikes</title>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+<script type="module" src="{{ url_for('static', filename='js/index.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+    <h1>Dublin Bikes 🚲</h1>
+
+    <div id="map"></div>
+
+        <script
+        src="https://maps.googleapis.com/maps/api/js?key={{ gmkey }}&callback=initMap&v=weekly"
+        defer
+        ></script>
+{% endblock %}
