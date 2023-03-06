@@ -1,0 +1,6 @@
+import requests
+import xmltodict
+
+r = requests.get("http://metwdb-openaccess.ichec.ie/metno-wdb2ts/locationforecast?lat=53.3498;long=-6.2603")
+my_dict = xmltodict.parse(r.content)
+print(my_dict)
