@@ -2,7 +2,7 @@ let map;
 
 function addMarkers(stations) {
   stations.forEach(station => {
-    var marker = new google.maps.Marker({
+    let marker = new google.maps.Marker({
       position: {
         lat: station.position_lat,
         lng: station.position_lng,
