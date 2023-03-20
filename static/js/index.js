@@ -28,6 +28,10 @@ function initMap() {
     center: { lat: 53.349811, lng: -6.260259 },
     zoom: 14,
   });
+  const bikeLayer = new google.maps.BicyclingLayer();
+
+  bikeLayer.setMap(map);
+
   getStations();
 }
 
