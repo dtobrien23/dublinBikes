@@ -8,11 +8,26 @@
 
 {% block body %}
     <h1>Dublin Bikes 🚲</h1>
+    <div class="app">
 
-    <div id="map"></div>
+        <div class="inputs">
+            <h2>Inputs</h2>
+            <form>
+                <label for="start_location">Start Location</label><input type=text id="start_location" placeholder="Enter Current Location" list="stations">
+                <label for="destination">Destination</label><input type=text id="destination" placeholder="Enter Destination" list="stations">
+                <datalist id="stations"></datalist>
+                <label for="date">Date</label><input type=date id="date">
+                <label for="time">Time</label><input type=time id="time">
+                <button type="button" onclick="showRoute()">Start!</button>
+            </form>
+        </div>
 
-        <script
-        src="https://maps.googleapis.com/maps/api/js?key={{ gmkey }}&callback=initMap&v=weekly"
-        defer
-        ></script>
+        <div id="map"></div>
+
+            <script
+            src="https://maps.googleapis.com/maps/api/js?key={{ gmkey }}&callback=initMap&v=weekly"
+            defer
+            ></script>
+
+    </div>
 {% endblock %}

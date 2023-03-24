@@ -44,6 +44,7 @@ function getStations() {
     .then((data) => {
       console.log("fetch response", typeof data);
       addMarkers(data);
+      stationsInfo(data)
     });
   }
 
@@ -54,6 +55,7 @@ function initMap() {
     zoom: 14,
   });
   const bikeLayer = new google.maps.BicyclingLayer();
+
   bikeLayer.setMap(map);
   getStations();
 }
