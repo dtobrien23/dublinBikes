@@ -49,7 +49,6 @@ def update_availability_cache():
 
 @app.route("/availability")
 def get_availability():
-    update_availability_cache()
     if 'cached_availability' in app.config:
         return jsonify(app.config['cached_availability'])
     else:
