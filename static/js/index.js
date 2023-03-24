@@ -20,6 +20,7 @@ function getStations() {
     .then((data) => {
       console.log("fetch response", typeof data);
       addMarkers(data);
+      stationsInfo(data)
     });
   }
 
@@ -28,7 +29,25 @@ function initMap() {
     center: { lat: 53.349811, lng: -6.260259 },
     zoom: 14,
   });
+  const bikeLayer = new google.maps.BicyclingLayer();
+
+  bikeLayer.setMap(map);
   getStations();
 }
 
 window.initMap = initMap;
+
+function stationsInfo(stations) {
+  let station_locations = ""
+  stations.forEach(station => {
+    station_locations += "<option value ='" + station.address + "'>"
+  });
+  document.getElementById('stations').innerHTML = station_locations;
+}
+
+function showRoute() {
+  let start_location = document.getElementById("start_location").value
+  let destination = document.getElementById("destination").value
+  let date = document.getElementById("date").value
+  let time = document.getElementById("time").value
+}
