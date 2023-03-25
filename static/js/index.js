@@ -1,5 +1,5 @@
 let map;
-let infoWindow;
+let infoWindow; // used to show the user where they are currently on the map
 let openStationWindow;  // used to make sure only one info window is open at a time
 
 function addMarkers(stations) {
@@ -37,7 +37,6 @@ function addMarkers(stations) {
   });
 }
 
-
 // used to get data for map markers
 function getStations() {
   fetch("/stations")
@@ -59,6 +58,7 @@ function initMap() {
   bikeLayer.setMap(map);
   getStations();
 
+  // creates an info window that shows the user there current location
   infoWindow = new google.maps.InfoWindow();
   const locationButton = document.createElement("button");
 
@@ -91,6 +91,7 @@ function initMap() {
   });
 }
 
+// runs if the user doesn't allow their location to be shared
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {
   infoWindow.setPosition(pos);
   infoWindow.setContent(
@@ -101,9 +102,9 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
   infoWindow.open(map);
 }
 
-
 window.initMap = initMap;
 
+// lists all the stations in the input fields
 function stationsInfo(stations) {
   let station_locations = ""
   stations.forEach(station => {
