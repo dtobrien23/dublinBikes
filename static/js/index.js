@@ -1,4 +1,5 @@
 let map;
+let infoWindow;
 let openStationWindow;  // used to make sure only one info window is open at a time
 
 function addMarkers(stations) {
@@ -47,7 +48,6 @@ function getStations() {
       stationsInfo(data)
     });
   }
-
 
 function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
