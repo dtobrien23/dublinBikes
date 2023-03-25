@@ -3,7 +3,9 @@ let currentLocationWindow; // used to show the user where they are currently on 
 let stationWindow;  // used to create info window for each marker
 let openStationWindow;  // used to make sure only one info window is open at a time
 
+
 function addMarkers(stations, availability) {
+
   // add a marker to the map for each station
   stations.forEach(station => {
     const marker = new google.maps.Marker({
@@ -15,9 +17,23 @@ function addMarkers(stations, availability) {
       title: station.name,
       station_number: station.number,
     });
-    // create an info window for each marker that will open when clicked
+    
+    // iterate through availability info for each station
     availability.forEach(thisStation => {
-      if (thisStation.number == station.number) {  // to get the relevant availability for this station
+
+      // get the correct availability for this station
+      if (thisStation.number == station.number) { 
+        
+        // set marker icon depending on availability
+        const greenStation = "/static/images/green-dot.png";
+        const redStation = "/static/images/red-dot.png";
+        if (thisStation.available_bikes >= 5) {
+          marker.setIcon(greenStation);
+        } else {
+          marker.setIcon(redStation);
+        };
+
+        // create an info window for each marker that will open when clicked
         let banking = "No";  // for card payment info
         if (station.banking == 1) {
           banking = "Yes";
@@ -26,8 +42,9 @@ function addMarkers(stations, availability) {
         content: `<div style="color: black;"><h1>${station.name}</h1><p>Status: ${thisStation.status}<br>Available bikes: ${thisStation.available_bikes}<br>
                   Available stands: ${thisStation.available_bike_stands}<br>Card payment: ${banking}</p></div>`,
         });
-      }
+      };
     }); 
+
     // click event to open info window
     marker.addListener('click', () => {
       // any currently open window will close when another marker is clicked
@@ -38,12 +55,13 @@ function addMarkers(stations, availability) {
       openStationWindow = marker.stationWindow;
     });
   });
+  
   // any currently open window will close when map is clicked
   map.addListener('click', () => {
     if (openStationWindow) {
       openStationWindow.close();
       openStationWindow = null;
-    }
+    };
   });
 }
 
