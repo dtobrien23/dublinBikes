@@ -1,5 +1,5 @@
 let map;
-let infoWindow; // used to show the user where they are currently on the map
+let currentLocationWindow; // used to show the user where they are currently on the map
 let openStationWindow;  // used to make sure only one info window is open at a time
 
 function addMarkers(stations) {
@@ -59,7 +59,9 @@ function initMap() {
   getStations();
 
   // creates an info window that shows the user there current location
-  infoWindow = new google.maps.InfoWindow();
+  currentLocationWindow = new google.maps.InfoWindow({
+      content: `<div style="color: black;"><p>Current Location</p></div>`,
+    });
   const locationButton = document.createElement("button");
 
   locationButton.textContent = "Pan to Current Location";
@@ -75,31 +77,30 @@ function initMap() {
             lng: position.coords.longitude,
           };
 
-          infoWindow.setPosition(pos);
-          infoWindow.setContent("Location found.");
-          infoWindow.open(map);
-          map.setCenter(pos);
+          currentLocationWindow.setPosition(pos);
+          currentLocationWindow.open(map);
+          map.center(pos);
         },
         () => {
-          handleLocationError(true, infoWindow, map.getCenter());
+          handleLocationError(true, currentLocationWindow, map.getCenter());
         }
       );
     } else {
       // Browser doesn't support Geolocation
-      handleLocationError(false, infoWindow, map.getCenter());
+      handleLocationError(false, currentLocationWindow, map.getCenter());
     }
   });
 }
 
 // runs if the user doesn't allow their location to be shared
-function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-  infoWindow.setPosition(pos);
-  infoWindow.setContent(
+function handleLocationError(browserHasGeolocation, currentLocationWindow, pos) {
+  currentLocationWindow.setPosition(pos);
+  currentLocationWindow.setContent(
     browserHasGeolocation
       ? "Error: The Geolocation service failed."
       : "Error: Your browser doesn't support geolocation."
   );
-  infoWindow.open(map);
+  currentLocationWindow.open(map);
 }
 
 window.initMap = initMap;
