@@ -53,6 +53,20 @@ def get_availability():
         return jsonify(app.config['cached_availability'])
     else:
         return "no data available", 404
+
+
+@app.route("/current_weather")
+@functools.lru_cache(maxsize=128)
+def get_weather():
+    current_time = time.time()
+    sql = f"select * from current_weather where timestamp >= ({current_time} - 300);"
+    try:
+        with engine.connect() as conn:
+            rows = conn.execute(text(sql)).fetchall()
+            return jsonify([row._asdict() for row in rows])
+    except:
+        print(traceback.format_exc())
+        return "error in get_stations", 404
     
 
 # start the scheduler
