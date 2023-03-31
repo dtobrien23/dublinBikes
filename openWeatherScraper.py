@@ -48,6 +48,7 @@ def api_to_db(apiData, timestamp):
             weather.get('current').get('dt'),
             weather.get('current').get('weather')[0].get('main'),
             weather.get('current').get('weather')[0].get('description'), 
+            weather.get('current').get('weather')[0].get('icon'), 
             weather.get('current').get('sunrise'), 
             weather.get('current').get('sunset'),
             weather.get('current').get('temp'),

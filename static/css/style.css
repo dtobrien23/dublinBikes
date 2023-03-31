@@ -7,18 +7,14 @@ h1 {
 }
 
 #map {
-    height: 50rem;
+    height: 47.5rem;
     width: 100%;
-    border-style: solid;
-    border-width: 2px;
-    border-color: blue;
-    margin: 0 20px 30px 0;
   }  
 
 body, html {
     height: 100%;
     font-family: sans-serif;
-    background-color: lightblue;
+    background-color: black;
     color:white;
     text-align:center;
 }
@@ -29,7 +25,7 @@ body, html {
 
 .inputs {
     background-color: black;
-    width: 200px;
+    width: 500px;
     margin: 0 5px 30px 0;
 }
 
