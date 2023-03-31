@@ -15,6 +15,7 @@ with engine.begin() as connection:
                     dt BIGINT,
                     main_weather VARCHAR(256),
                     weather_desc VARCHAR(256),
+                    icon_code VARCHAR(256),
                     sunrise BIGINT,
                     sunset BIGINT,
                     temp FLOAT,
@@ -29,14 +30,6 @@ with engine.begin() as connection:
         connection.execute(text(createCurrentWeatherTable))
     except Exception as e:
         print(e)
-
-# added additional column after table was created
-metadata = MetaData()
-current_weather = Table("current_weather", metadata, autoload=True, autoload_with=engine)
-with engine.begin() as connection:
-    if not "icon_column" in current_weather.c.keys():
-        icon_column = Column("icon_code", String(length=256))
-        connection.execute(text(f"ALTER TABLE current_weather ADD {icon_column.compile(dialect=engine.dialect)} VARCHAR(256) AFTER weather_desc;"))
     
 def main():
     try:
