@@ -3,26 +3,29 @@
 }
 
 h1 {
-    margin: 20px 0 20px 0;
+    margin: 20px 0 5px 0;
+    font-size: 40px;
 }
 
 #map {
-    height: 47.5rem;
+    height: 47.2rem;
     width: 100%;
+    border-left: white solid 5px;
+    border-bottom: white solid 5px;
   }  
 
 body, html {
     height: 100%;
     font-family: sans-serif;
-    background-color: black;
-    color:white;
-    text-align:center;
+    background-image: linear-gradient(to bottom right, #9CC0E7, navy);
+    color: white;
+    text-align: center;
 }
 
 .inputs {
-    background-color: black;
-    width: 500px;
-    margin: 0 20px 30px 20px;
+    width: 450px;
+    margin: 0 0 0 20px;
+    padding: 0 0 30px 0;
     text-align: left;
 }
 
@@ -46,6 +49,6 @@ body, html {
   background: rgb(235, 235, 235);
 }
 
-#logo {
-  float: right;
+#weather {
+  font-size: 30px;
 }
