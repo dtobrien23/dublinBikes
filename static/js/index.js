@@ -82,7 +82,7 @@ function getStationInformation() {
 
 function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
-    center: { lat: 53.349811, lng: -6.260259 },
+    center: { lat: 53.346077, lng: -6.269475 },
     zoom: 14,
   });
   const bikeLayer = new google.maps.BicyclingLayer();
