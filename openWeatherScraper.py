@@ -1,7 +1,7 @@
 import dbinfo
 import requests
 import json
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, text, MetaData, Table, Column, String
 import traceback
 from datetime import datetime
 
@@ -30,6 +30,14 @@ with engine.begin() as connection:
     except Exception as e:
         print(e)
 
+# added additional column after table was created
+metadata = MetaData()
+current_weather = Table("current_weather", metadata, autoload=True, autoload_with=engine)
+with engine.begin() as connection:
+    if not "icon_column" in current_weather.c.keys():
+        icon_column = Column("icon_code", String(length=256))
+        connection.execute(text(f"ALTER TABLE current_weather ADD {icon_column.compile(dialect=engine.dialect)} VARCHAR(256) AFTER weather_desc;"))
+    
 def main():
     try:
         now = datetime.now()
@@ -48,6 +56,7 @@ def api_to_db(apiData, timestamp):
             weather.get('current').get('dt'),
             weather.get('current').get('weather')[0].get('main'),
             weather.get('current').get('weather')[0].get('description'), 
+            weather.get('current').get('weather')[0].get('icon'), 
             weather.get('current').get('sunrise'), 
             weather.get('current').get('sunset'),
             weather.get('current').get('temp'),
@@ -58,7 +67,7 @@ def api_to_db(apiData, timestamp):
             )
             
         try:
-            weather_insert_row = """INSERT INTO current_weather VALUES("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")"""
+            weather_insert_row = """INSERT INTO current_weather VALUES("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")"""
             weather_insert_row = weather_insert_row % weather_info
             connection.execute(text(weather_insert_row))
 
