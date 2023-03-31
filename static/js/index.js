@@ -29,27 +29,27 @@ function addMarkers(stations, availability) {
           path: google.maps.SymbolPath.CIRCLE,
           fillColor: '#32A432',
           fillOpacity: 1,
-          strokeWeight: 4,
+          strokeWeight: 2,
           strokeColor: '#FFFFFF',
-          scale: 15
+          scale: 14
         };
           
         const orangeStation = {
           path: google.maps.SymbolPath.CIRCLE,
           fillColor: '#EFB700',
           fillOpacity: 1,
-          strokeWeight: 4,
+          strokeWeight: 2,
           strokeColor: '#FFFFFF',
-          scale: 15
+          scale: 14
         };
 
         const redStation = {
           path: google.maps.SymbolPath.CIRCLE,
           fillColor: '#FF0000',
           fillOpacity: 1,
-          strokeWeight: 4,
+          strokeWeight: 2,
           strokeColor: '#FFFFFF',
-          scale: 15
+          scale: 14
         };
       
         if (thisStation.available_bikes == 0) {
