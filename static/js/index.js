@@ -25,9 +25,32 @@ function addMarkers(stations, availability) {
       if (thisStation.number == station.number) {
 
         // set marker icon depending on availability
-        const greenStation = "/static/images/green.png";
-        const orangeStation = "/static/images/orange.png"
-        const redStation = "/static/images/red.png";
+        const greenStation = {
+          path: google.maps.SymbolPath.CIRCLE,
+          fillColor: '#32A432',
+          fillOpacity: 1,
+          strokeWeight: 2,
+          strokeColor: '#000000',
+          scale: 13
+        };
+          
+        const orangeStation = {
+          path: google.maps.SymbolPath.CIRCLE,
+          fillColor: '#EFB700',
+          fillOpacity: 1,
+          strokeWeight: 2,
+          strokeColor: '#000000',
+          scale: 13
+        };
+
+        const redStation = {
+          path: google.maps.SymbolPath.CIRCLE,
+          fillColor: '#FF0000',
+          fillOpacity: 1,
+          strokeWeight: 2,
+          strokeColor: '#000000',
+          scale: 13
+        };
       
         if (thisStation.available_bikes == 0) {
         marker.setIcon(redStation);
