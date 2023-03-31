@@ -25,12 +25,16 @@ function addMarkers(stations, availability) {
       if (thisStation.number == station.number) {
 
         // set marker icon depending on availability
-        const greenStation = "/static/images/green-dot.png";
-        const redStation = "/static/images/red-dot.png";
-        if (thisStation.available_bikes >= 5) {
-          marker.setIcon(greenStation);
+        const greenStation = "/static/images/green.png";
+        const orangeStation = "/static/images/orange.png"
+        const redStation = "/static/images/red.png";
+      
+        if (thisStation.available_bikes == 0) {
+        marker.setIcon(redStation);
+        } else if (thisStation.available_bikes <= 5 && thisStation.available_bikes >= 1) {
+            marker.setIcon(orangeStation);
         } else {
-          marker.setIcon(redStation);
+            marker.setIcon(greenStation);
         }
 
         // create an info window for each marker that will open when clicked
