@@ -3,20 +3,31 @@
 {% block head %}
 <title>Dublin Bikes</title>
 <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-<script type="module" src="{{ url_for('static', filename='js/index.js') }}"></script>
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
+
 {% endblock %}
 
 {% block body %}
     <div class="app">
 
         <div class="inputs">
-            <h1>Dublin Bikes</h1>
             <h2>Inputs</h2>
             <form>
-                <label for="destination">Destination</label><input type=text id="destination" placeholder="Enter Destination">
-                <button type="button" onclick="showRoute()">Start!</button>
+                <label for="origin">Origin</label><input type=text id="origin" placeholder="Enter Origin">
+                <button type="button" id="start">Start!</button>
+                    <div id="mode-selector" class="controls">
+                        <input type="radio" name="type" id="changemode-walking" checked="checked"/>
+                        <label for="changemode-walking">Walking</label>
+
+                        <input type="radio" name="type" id="changemode-transit" />
+                        <label for="changemode-transit">Transit</label>
+
+                        <input type="radio" name="type" id="changemode-driving" />
+                        <label for="changemode-driving">Driving</label>
+                    </div>
             </form>
         </div>
+
 
         <div id="map"></div>
 
