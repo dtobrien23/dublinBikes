@@ -3,6 +3,7 @@ let currentLocationWindow; // used to show the user where they are currently on 
 let stationWindow;  // used to create info window for each marker
 let openStationWindow;  // used to make sure only one info window is open at a time
 
+
 function addMarkers(stations, availability) {
 
   // add a marker to the map for each station
@@ -24,12 +25,16 @@ function addMarkers(stations, availability) {
       if (thisStation.number == station.number) {
 
         // set marker icon depending on availability
-        const greenStation = "/static/images/green-dot.png";
-        const redStation = "/static/images/red-dot.png";
-        if (thisStation.available_bikes >= 5) {
-          marker.setIcon(greenStation);
+        const greenStation = "/static/images/green.png";
+        const orangeStation = "/static/images/orange.png"
+        const redStation = "/static/images/red.png";
+
+        if (thisStation.available_bikes == 0) {
+        marker.setIcon(redStation);
+        } else if (thisStation.available_bikes <= 5 && thisStation.available_bikes >= 1) {
+            marker.setIcon(orangeStation);
         } else {
-          marker.setIcon(redStation);
+            marker.setIcon(greenStation);
         }
 
         // create an info window for each marker that will open when clicked
@@ -81,7 +86,7 @@ function getStationInformation() {
 
 function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
-    center: {lat: 53.349811, lng: -6.260259},
+    center: { lat: 53.346077, lng: -6.269475 },
     zoom: 14,
   });
   const bikeLayer = new google.maps.BicyclingLayer();
