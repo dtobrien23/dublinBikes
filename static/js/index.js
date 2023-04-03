@@ -225,7 +225,7 @@ class AutocompleteDirectionsHandler {
     var icons = {
     start: new google.maps.MarkerImage(
      // URL
-     "/static/images/clouds.png",
+     "/static/images/bike.png",
      // (width,height)
      new google.maps.Size( 44, 32 ),
      // The origin point (x,y)
@@ -235,7 +235,7 @@ class AutocompleteDirectionsHandler {
     ),
     end: new google.maps.MarkerImage(
      // URL
-     "/static/images/rain.png",
+     "/static/images/bike.png",
      // (width,height)
      new google.maps.Size( 44, 32 ),
      // The origin point (x,y)
