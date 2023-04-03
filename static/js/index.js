@@ -225,19 +225,9 @@ class AutocompleteDirectionsHandler {
     var icons = {
     start: new google.maps.MarkerImage(
      // URL
-     "/static/images/clouds.png",
+     "/static/images/startRouteMarker.png",
      // (width,height)
-     new google.maps.Size( 44, 32 ),
-     // The origin point (x,y)
-     new google.maps.Point( 0, 0 ),
-     // The anchor point (x,y)
-     new google.maps.Point( 22, 32 )
-    ),
-    end: new google.maps.MarkerImage(
-     // URL
-     "/static/images/rain.png",
-     // (width,height)
-     new google.maps.Size( 44, 32 ),
+     new google.maps.Size( 32, 35 ),
      // The origin point (x,y)
      new google.maps.Point( 0, 0 ),
      // The anchor point (x,y)
@@ -266,7 +256,6 @@ class AutocompleteDirectionsHandler {
           //customises the route markers
           let leg = response.routes[ 0 ].legs[ 0 ];
           makeMarker(leg.start_location, icons.start, "title");
-          makeMarker(leg.end_location, icons.end, 'title');
         } else {
           window.alert("Directions request failed due to " + status);
         }
