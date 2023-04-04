@@ -2,6 +2,7 @@ let map;
 let currentLocationWindow; // used to show the user where they are currently on the map
 let stationWindow;  // used to create info window for each marker
 let openStationWindow;  // used to make sure only one info window is open at a time
+let originMarker;
 
 
 function addMarkers(stations, availability) {
@@ -208,52 +209,52 @@ class AutocompleteDirectionsHandler {
       service.findPlaceFromQuery(request, (results, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK  && results) {
           this.originLatLng = results[0].geometry.location;
-        }
-      });
 
-      //finds the nearest station that has bikes available to the origin address
-      fetch("/stations")
-      .then((response) => response.json())
-      .then((stationData) => {
-        console.log("fetch response", typeof stationData);
-        fetch("/availability")
-        .then((response) => response.json())
-        .then((availabilityData) => {
-          let availableBikeStands = [];
-          let shortestDistance = Infinity;
-          let glat = this.originLatLng.lat();
-          let glng = this.originLatLng.lng();
-          console.log("fetch response", typeof availabilityData);
+          //finds the nearest station that has bikes available to the origin address
+          fetch("/stations")
+          .then((response) => response.json())
+          .then((stationData) => {
+            console.log("fetch response", typeof stationData);
+            fetch("/availability")
+            .then((response) => response.json())
+            .then((availabilityData) => {
+              let availableBikeStands = [];
+              let shortestDistance = Infinity;
+              let glat = this.originLatLng.lat();
+              let glng = this.originLatLng.lng();
+              console.log("fetch response", typeof availabilityData);
 
-          //checks that there are bikes available
-          availabilityData.forEach(availableBikes => {
-            if (availableBikes.available_bikes > 0) {
-              let standNum = availableBikes.number
-              availableBikeStands.push(standNum);
-            }
-          })
-
-          //finds the closest bike stand with bikes available
-          stationData.forEach(station => {
-            let R = 6371; // radius of earth in km
-            let slat = station.position_lat;
-            let slng = station.position_lng;
-            let dLat = rad(slat - glat);
-            let dLong = rad(slng - glng);
-            let a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(rad(glat)) * Math.cos(rad(glat)) * Math.sin(dLong / 2) * Math.sin(dLong / 2);
-            let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            let d = R * c;
-            if (availableBikeStands.includes(station.number)) {
-              if (d < shortestDistance) {
-                shortestDistance = d;
-                this.destinationLatLng = {lat: slat, lng: slng};
+              //checks that there are bikes available
+              availabilityData.forEach(availableBikes => {
+                if (availableBikes.available_bikes > 0) {
+                  let standNum = availableBikes.number
+                  availableBikeStands.push(standNum);
                 }
-              }
+              })
+
+              //finds the closest bike stand with bikes available
+              stationData.forEach(station => {
+                let R = 6371; // radius of earth in km
+                let slat = station.position_lat;
+                let slng = station.position_lng;
+                let dLat = rad(slat - glat);
+                let dLong = rad(slng - glng);
+                let a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos(rad(glat)) * Math.cos(rad(glat)) * Math.sin(dLong / 2) * Math.sin(dLong / 2);
+                let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                let d = R * c;
+                if (availableBikeStands.includes(station.number)) {
+                  if (d < shortestDistance) {
+                    shortestDistance = d;
+                    this.destinationLatLng = {lat: slat, lng: slng};
+                    }
+                  }
+              });
+              //runs the routing function to render the route
+              this.route();
+            });
           });
-          //runs the routing function to render the route
-          this.route();
-        });
+        }
       });
     });
   }
@@ -279,7 +280,6 @@ class AutocompleteDirectionsHandler {
 
     //finds and renders the route from origin to the closest bike stand
     const me = this;
-    let directionsFlag = 0;
     this.directionsService.route(
       {
         origin: this.originLatLng ,
@@ -289,9 +289,10 @@ class AutocompleteDirectionsHandler {
       (response, status) => {
         if (status === "OK") {
           me.directionsRenderer.setDirections(response);
-          directionsFlag = 1
-
           //customises the route markers
+          if (typeof originMarker != "undefined"){
+            originMarker.setMap(null);
+          }
           let leg = response.routes[ 0 ].legs[ 0 ];
           makeMarker(leg.start_location, icons.start, "title");
         } else {
@@ -300,24 +301,21 @@ class AutocompleteDirectionsHandler {
       }
     );
 
-    //flag checks whether there is a route displayed and if a click happens the route is removed
+    //checks whether a click happened and removes the route
     map.addListener('click', () => {
-      if (directionsFlag == 1) {
         me.directionsRenderer.setMap(null);
-        directionsFlag = 0;
-      }
+        originMarker.setMap(null);
     });
 
     //function to make custom markers for the routing
     function makeMarker( position, icon, title ) {
-      new google.maps.Marker({
+      originMarker = new google.maps.Marker({
       position: position,
       map: map,
       icon: icon,
       title: title
-    });
-}
-
+      });
+    }
   }
 }
 
