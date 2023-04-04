@@ -25,9 +25,32 @@ function addMarkers(stations, availability) {
       if (thisStation.number == station.number) {
 
         // set marker icon depending on availability
-        const greenStation = "/static/images/green.png";
-        const orangeStation = "/static/images/orange.png"
-        const redStation = "/static/images/red.png";
+        const greenStation = {
+          path: google.maps.SymbolPath.CIRCLE,
+          fillColor: '#32A432',
+          fillOpacity: 1,
+          strokeWeight: 2,
+          strokeColor: '#FFFFFF',
+          scale: 14
+        };
+          
+        const orangeStation = {
+          path: google.maps.SymbolPath.CIRCLE,
+          fillColor: '#EFB700',
+          fillOpacity: 1,
+          strokeWeight: 2,
+          strokeColor: '#FFFFFF',
+          scale: 14
+        };
+
+        const redStation = {
+          path: google.maps.SymbolPath.CIRCLE,
+          fillColor: '#FF0000',
+          fillOpacity: 1,
+          strokeWeight: 2,
+          strokeColor: '#FFFFFF',
+          scale: 14
+        };
 
         if (thisStation.available_bikes == 0) {
         marker.setIcon(redStation);
@@ -83,6 +106,21 @@ function getStationInformation() {
           });
       });
 }
+
+ // used to display current weather info
+function getWeatherInformation() {
+  fetch("/current_weather")
+    .then((response) => response.json())
+    .then((weatherData) => {
+      console.log("fetch response", typeof weatherData);
+      // convert from kelvin to celcius
+      var temp = Math.floor(weatherData[0].temp - 273.15);
+      const html = `${temp}&deg;C <img src="http://openweathermap.org/img/w/${weatherData[0].icon_code}.png">`;
+      document.getElementById("weather").innerHTML = html;
+  });
+} 
+
+getWeatherInformation()
 
 function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {

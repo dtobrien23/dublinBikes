@@ -1,7 +1,7 @@
 import dbinfo
 import requests
 import json
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, text, MetaData, Table, Column, String
 import traceback
 from datetime import datetime
 
@@ -15,6 +15,7 @@ with engine.begin() as connection:
                     dt BIGINT,
                     main_weather VARCHAR(256),
                     weather_desc VARCHAR(256),
+                    icon_code VARCHAR(256),
                     sunrise BIGINT,
                     sunset BIGINT,
                     temp FLOAT,
@@ -29,7 +30,7 @@ with engine.begin() as connection:
         connection.execute(text(createCurrentWeatherTable))
     except Exception as e:
         print(e)
-
+    
 def main():
     try:
         now = datetime.now()
@@ -48,6 +49,7 @@ def api_to_db(apiData, timestamp):
             weather.get('current').get('dt'),
             weather.get('current').get('weather')[0].get('main'),
             weather.get('current').get('weather')[0].get('description'), 
+            weather.get('current').get('weather')[0].get('icon'), 
             weather.get('current').get('sunrise'), 
             weather.get('current').get('sunset'),
             weather.get('current').get('temp'),
@@ -58,7 +60,7 @@ def api_to_db(apiData, timestamp):
             )
             
         try:
-            weather_insert_row = """INSERT INTO current_weather VALUES("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")"""
+            weather_insert_row = """INSERT INTO current_weather VALUES("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")"""
             weather_insert_row = weather_insert_row % weather_info
             connection.execute(text(weather_insert_row))
 
