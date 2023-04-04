@@ -51,7 +51,7 @@ function addMarkers(stations, availability) {
           strokeColor: '#FFFFFF',
           scale: 14
         };
-      
+
         if (thisStation.available_bikes == 0) {
         marker.setIcon(redStation);
         } else if (thisStation.available_bikes <= 5 && thisStation.available_bikes >= 1) {
@@ -105,7 +105,7 @@ function getStationInformation() {
           addMarkers(stationData, availabilityData);
           });
       });
-  }
+}
 
  // used to display current weather info
 function getWeatherInformation() {
@@ -131,19 +131,194 @@ function initMap() {
 
   bikeLayer.setMap(map);
   getStationInformation();
-  //display_current_location(map);
+  //display_current_location(map); - currently disabled
 
-  google.maps.event.addDomListener(window, 'load', autocompletePlaces)
-
+  //creates routing and autocompletion dropdown
+  new AutocompleteDirectionsHandler(map);
 }
-// Function to autocomplete list, currently commented out so as not to go over Google Maps API request limit
-function autocompletePlaces(callback) {
-  const input = document.getElementById("destination");
-  const autocomplete = new google.maps.places.Autocomplete(input);
+//used to calculate the nearest station as the crow flies
+function rad(x) {return x*Math.PI/180;}
 
-  autocomplete.addListener('place_changed', function () {
-    const place = autocomplete.getPlace();
-  });
+//provides dropdown list of origin options
+class AutocompleteDirectionsHandler {
+  map;
+  originLatLng;
+  travelMode;
+  directionsService;
+  directionsRenderer;
+
+  //constructs all variables of the class
+  //Ref: https://developers.google.com/maps/documentation/javascript/examples/places-autocomplete-directions
+  constructor(map) {
+    this.map = map;
+    this.originLatLng = "";
+    this.destinationLatLng = "";
+    this.travelMode = google.maps.TravelMode.WALKING;
+    this.directionsService = new google.maps.DirectionsService();
+    this.directionsRenderer = new google.maps.DirectionsRenderer({suppressMarkers: true});
+    this.directionsRenderer.setMap(map);
+
+    const originInput = document.getElementById("origin");
+    //just get the geocoordinates of the origin
+    const originAutocomplete = new google.maps.places.Autocomplete(
+      originInput,
+      { fields: ["geometry"] }
+    );
+
+    //user can choose public transport, walking or driving to the nearest available bike stand
+    this.setupClickListener(
+      "changemode-walking",
+      google.maps.TravelMode.WALKING
+    );
+    this.setupClickListener(
+      "changemode-transit",
+      google.maps.TravelMode.TRANSIT
+    );
+    this.setupClickListener(
+      "changemode-driving",
+      google.maps.TravelMode.DRIVING
+    );
+    this.setupPlaceChangedListener(originAutocomplete, "ORIG");
+  }
+  // Sets a listener on a radio button to change the filter type on Places Autocomplete
+  setupClickListener(id, mode) {
+    const radioButton = document.getElementById(id);
+
+    radioButton.addEventListener("click", () => {
+      this.travelMode = mode;
+      this.route();
+    });
+  }
+  //populates locations dropdown
+  setupPlaceChangedListener(autocomplete) {
+    //dropdown menu will prioritise places in view
+    autocomplete.bindTo("bounds", this.map);
+    // Ref: https://developers.google.com/maps/documentation/javascript/examples/place-search
+    //onclick of the start button the location geocoordinates are fetched
+    const button = document.getElementById("start");
+    button.addEventListener("click", () => {
+
+      const originAddress = document.getElementById("origin").value;
+      let request = {
+      query: originAddress,
+      fields: ['geometry'],
+      };
+      //service returns the geocoordinates of the inputted place
+      let service = new google.maps.places.PlacesService(this.map);
+      service.findPlaceFromQuery(request, (results, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK  && results) {
+          this.originLatLng = results[0].geometry.location;
+        }
+      });
+
+      //finds the nearest station that has bikes available to the origin address
+      fetch("/stations")
+      .then((response) => response.json())
+      .then((stationData) => {
+        console.log("fetch response", typeof stationData);
+        fetch("/availability")
+        .then((response) => response.json())
+        .then((availabilityData) => {
+          let availableBikeStands = [];
+          let shortestDistance = Infinity;
+          let glat = this.originLatLng.lat();
+          let glng = this.originLatLng.lng();
+          console.log("fetch response", typeof availabilityData);
+
+          //checks that there are bikes available
+          availabilityData.forEach(availableBikes => {
+            if (availableBikes.available_bikes > 0) {
+              let standNum = availableBikes.number
+              availableBikeStands.push(standNum);
+            }
+          })
+
+          //finds the closest bike stand with bikes available
+          stationData.forEach(station => {
+            let R = 6371; // radius of earth in km
+            let slat = station.position_lat;
+            let slng = station.position_lng;
+            let dLat = rad(slat - glat);
+            let dLong = rad(slng - glng);
+            let a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(rad(glat)) * Math.cos(rad(glat)) * Math.sin(dLong / 2) * Math.sin(dLong / 2);
+            let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            let d = R * c;
+            if (availableBikeStands.includes(station.number)) {
+              if (d < shortestDistance) {
+                shortestDistance = d;
+                this.destinationLatLng = {lat: slat, lng: slng};
+                }
+              }
+          });
+          //runs the routing function to render the route
+          this.route();
+        });
+      });
+    });
+  }
+  route() {
+
+    //custom markers for the routing rendering
+    var icons = {
+    start: new google.maps.MarkerImage(
+     // URL
+     "/static/images/startRouteMarker.png",
+     // (width,height)
+     new google.maps.Size( 32, 35 ),
+     // The origin point (x,y)
+     new google.maps.Point( 0, 0 ),
+     // The anchor point (x,y)
+     new google.maps.Point( 22, 32 )
+    )
+   };
+
+    if (!this.originLatLng || !this.destinationLatLng) {
+      return;
+    }
+
+    //finds and renders the route from origin to the closest bike stand
+    const me = this;
+    let directionsFlag = 0;
+    this.directionsService.route(
+      {
+        origin: this.originLatLng ,
+        destination: this.destinationLatLng ,
+        travelMode: this.travelMode,
+      },
+      (response, status) => {
+        if (status === "OK") {
+          me.directionsRenderer.setDirections(response);
+          directionsFlag = 1
+
+          //customises the route markers
+          let leg = response.routes[ 0 ].legs[ 0 ];
+          makeMarker(leg.start_location, icons.start, "title");
+        } else {
+          window.alert("Directions request failed due to " + status);
+        }
+      }
+    );
+
+    //flag checks whether there is a route displayed and if a click happens the route is removed
+    map.addListener('click', () => {
+      if (directionsFlag == 1) {
+        me.directionsRenderer.setMap(null);
+        directionsFlag = 0;
+      }
+    });
+
+    //function to make custom markers for the routing
+    function makeMarker( position, icon, title ) {
+      new google.maps.Marker({
+      position: position,
+      map: map,
+      icon: icon,
+      title: title
+    });
+}
+
+  }
 }
 
 // Currently disabled
@@ -159,7 +334,6 @@ function display_current_location(map) {
 
   locationButton.innerHTMl = "<option value ='Current Location'>";
   locationButton.classList.add("custom-map-control-button");
-  map.controls[google.maps.ControlPosition.TOP_CENTER].push(locationButton);
 
   locationButton.addEventListener("click", () => {
     // Try HTML5 geolocation.
@@ -197,10 +371,4 @@ function handleLocationError(browserHasGeolocation, currentLocationWindow, pos) 
   currentLocationWindow.open(map);
 }
 
-function showRoute() {
-  let x = 5
-  console.log(x)
-}
-
 window.initMap = initMap;
-console.log("destination");
