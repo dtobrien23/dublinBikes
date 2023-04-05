@@ -219,7 +219,9 @@ class AutocompleteDirectionsHandler {
             .then((response) => response.json())
             .then((availabilityData) => {
               let availableBikeStands = [];
-              let shortestDistance = Infinity;
+              let shortestGeoDistance = [];
+
+              //gets the lat and lng values for the chosen station from the dropdown
               let glat = this.originLatLng.lat();
               let glng = this.originLatLng.lng();
               console.log("fetch response", typeof availabilityData);
@@ -232,7 +234,7 @@ class AutocompleteDirectionsHandler {
                 }
               })
 
-              //finds the closest bike stand with bikes available
+              //finds the closest bike stand with bikes available based on geographical distance
               stationData.forEach(station => {
                 let R = 6371; // radius of earth in km
                 let slat = station.position_lat;
@@ -244,14 +246,59 @@ class AutocompleteDirectionsHandler {
                 let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
                 let d = R * c;
                 if (availableBikeStands.includes(station.number)) {
-                  if (d < shortestDistance) {
-                    shortestDistance = d;
-                    this.destinationLatLng = {lat: slat, lng: slng};
-                    }
-                  }
+
+                  //stores all the values in an array of arrays
+                    shortestGeoDistance.push([[slat, slng], d]);
+                }
               });
-              //runs the routing function to render the route
-              this.route();
+
+              //sorts the array and takes the top 6 values
+              shortestGeoDistance.sort((a, b) => a[1] - b[1]);
+              shortestGeoDistance = shortestGeoDistance.slice(0, 6);
+              let shortestStreetsDistance = Infinity;
+
+              //create an array of promises for each value of ShortestStreetsDistance to prevent the route()
+              // function from running before the actual shortest distance is found
+              const promises = shortestGeoDistance.map(distance => {
+                return new Promise((resolve, reject) => {
+                let sdLat = distance[0][0];
+                let sdLng = distance[0][1];
+                let closestDestination = {lat: sdLat, lng: sdLng};
+
+                //uses the Google Maps service to find the closest station by distance using streets rather
+                  // than geographical distance
+                this.directionsService.route(
+                {
+                  origin: this.originLatLng ,
+                  destination: closestDestination ,
+                  travelMode: this.travelMode,
+                },
+                (response, status) => {
+                  if (status === "OK") {
+
+                    // parsing response object to get distance
+                    let d =  response.routes[ 0 ].legs[ 0 ].distance.value;
+                    if (d < shortestStreetsDistance) {
+                      shortestStreetsDistance = d;
+                      this.destinationLatLng = {lat: sdLat, lng: sdLng};
+                    }
+                    // if the code ran ok, response of OK sent back and next iteration occurs
+                    resolve();
+                  } else {
+                    reject(status);
+                  }
+                });
+                });
+
+              });
+              // waits until all promises are resolved then this.route() is called
+              Promise.all(promises)
+                .then(() => {
+                  this.route();
+                })
+                .catch((error) => {
+                  console.error(error);
+                });
             });
           });
         }
@@ -259,21 +306,6 @@ class AutocompleteDirectionsHandler {
     });
   }
   route() {
-
-    //custom markers for the routing rendering
-    var icons = {
-    start: new google.maps.MarkerImage(
-     // URL
-     "/static/images/startRouteMarker.png",
-     // (width,height)
-     new google.maps.Size( 32, 35 ),
-     // The origin point (x,y)
-     new google.maps.Point( 0, 0 ),
-     // The anchor point (x,y)
-     new google.maps.Point( 22, 32 )
-    )
-   };
-
     if (!this.originLatLng || !this.destinationLatLng) {
       return;
     }
@@ -306,6 +338,20 @@ class AutocompleteDirectionsHandler {
         me.directionsRenderer.setMap(null);
         originMarker.setMap(null);
     });
+
+    //custom markers for the routing rendering
+    var icons = {
+    start: new google.maps.MarkerImage(
+     // URL
+     "/static/images/startRouteMarker.png",
+     // (width,height)
+     new google.maps.Size( 32, 35 ),
+     // The origin point (x,y)
+     new google.maps.Point( 0, 0 ),
+     // The anchor point (x,y)
+     new google.maps.Point( 22, 32 )
+    )
+   };
 
     //function to make custom markers for the routing
     function makeMarker( position, icon, title ) {
