@@ -8,14 +8,14 @@ h1 {
 }
 
 #map {
-    height: 47.2rem;
+    height: 100vh;
     width: 100%;
     border-left: white solid 5px;
     border-bottom: white solid 5px;
   }  
 
 body, html {
-    height: 100%;
+    height: 100vh;
     font-family: sans-serif;
     background-image: linear-gradient(to bottom right, #9CC0E7, navy);
     color: white;
@@ -51,6 +51,7 @@ body, html {
 
 #weather {
   font-size: 30px;
+}
 
 .controls {
   margin-top: 10px;
@@ -94,4 +95,12 @@ body, html {
 }
 #logo {
   float: right;
+}
+
+#journey_planner {
+    display: block;
+}
+
+#forecast_planner {
+    display: none;
 }

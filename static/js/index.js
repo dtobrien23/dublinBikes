@@ -2,6 +2,8 @@ let map;
 let currentLocationWindow; // used to show the user where they are currently on the map
 let stationWindow;  // used to create info window for each marker
 let openStationWindow;  // used to make sure only one info window is open at a time
+let originMarker;
+let userHasBikeFlag = true;
 
 
 function addMarkers(stations, availability) {
@@ -149,6 +151,15 @@ function initMap() {
 
   //creates routing and autocompletion dropdown
   new AutocompleteDirectionsHandler(map);
+
+  //checks forecast button is clicked
+  document.getElementById("forecast").addEventListener("click", forecastPlanner);
+
+  //checks journey button is clicked
+  document.getElementById("journey").addEventListener("click", journeyPlanner);
+
+  //checks start button for forecast is clicked
+  document.getElementById("start_prediction").addEventListener("click", startPrediction);
 }
 //used to calculate the nearest station as the crow flies
 function rad(x) {return x*Math.PI/180;}
@@ -173,7 +184,7 @@ class AutocompleteDirectionsHandler {
     this.directionsRenderer.setMap(map);
 
     const originInput = document.getElementById("origin");
-    //just get the geocoordinates of the origin
+    //gets the geocoordinates of the origin
     const originAutocomplete = new google.maps.places.Autocomplete(
       originInput,
       { fields: ["geometry"] }
@@ -182,96 +193,211 @@ class AutocompleteDirectionsHandler {
     //user can choose public transport, walking or driving to the nearest available bike stand
     this.setupClickListener(
       "changemode-walking",
-      google.maps.TravelMode.WALKING
+      google.maps.TravelMode.WALKING,
+        originAutocomplete
     );
     this.setupClickListener(
       "changemode-transit",
-      google.maps.TravelMode.TRANSIT
+      google.maps.TravelMode.TRANSIT,
+        originAutocomplete
     );
     this.setupClickListener(
       "changemode-driving",
-      google.maps.TravelMode.DRIVING
+      google.maps.TravelMode.DRIVING,
+        originAutocomplete
     );
+    //setups listeners for changing to the routing
     this.setupPlaceChangedListener(originAutocomplete, "ORIG");
+    this.startJourneyButton(originAutocomplete);
+    this.getBike(originAutocomplete);
+    this.returnBike(originAutocomplete);
   }
+
+  //Routes if start is clicked
+  startJourneyButton(originAutocomplete) {
+    document.getElementById("start_route").addEventListener("click", () => {
+      this.setupPlaceChangedListener(originAutocomplete, "ORIG");
+    });
+  }
+
+  //Reroutes when get bike button is clicked
+  getBike(originAutocomplete) {
+    document.getElementById("getBike").addEventListener("click", () => {
+      userHasBikeFlag = true;
+      this.setupPlaceChangedListener(originAutocomplete, "ORIG");
+    });
+  }
+
+  //Reroutes when return bike button is clicked
+  returnBike(originAutocomplete) {
+    document.getElementById("returnBike").addEventListener("click", () => {
+      userHasBikeFlag = false;
+      this.setupPlaceChangedListener(originAutocomplete, "ORIG");
+    });
+  }
+
   // Sets a listener on a radio button to change the filter type on Places Autocomplete
-  setupClickListener(id, mode) {
+  setupClickListener(id, mode, originAutocomplete) {
     const radioButton = document.getElementById(id);
 
     radioButton.addEventListener("click", () => {
       this.travelMode = mode;
-      this.route();
+      this.setupPlaceChangedListener(originAutocomplete, "ORIG");
     });
   }
-  //populates locations dropdown
+
   setupPlaceChangedListener(autocomplete) {
     //dropdown menu will prioritise places in view
     autocomplete.bindTo("bounds", this.map);
     // Ref: https://developers.google.com/maps/documentation/javascript/examples/place-search
-    //onclick of the start button the location geocoordinates are fetched
-    const button = document.getElementById("start");
-    button.addEventListener("click", () => {
-
       const originAddress = document.getElementById("origin").value;
       let request = {
       query: originAddress,
       fields: ['geometry'],
       };
+
       //service returns the geocoordinates of the inputted place
       let service = new google.maps.places.PlacesService(this.map);
       service.findPlaceFromQuery(request, (results, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK  && results) {
           this.originLatLng = results[0].geometry.location;
+
+          //finds the nearest station that has bikes available to the origin address
+          fetch("/stations")
+          .then((response) => response.json())
+          .then((stationData) => {
+            console.log("fetch response", typeof stationData);
+            fetch("/availability")
+            .then((response) => response.json())
+            .then((availabilityData) => {
+              let bikeStands = [];
+              let shortestGeoDistance = [];
+
+              //gets the lat and lng values for the chosen station from the dropdown
+              let glat = this.originLatLng.lat();
+              let glng = this.originLatLng.lng();
+              console.log("fetch response", typeof availabilityData);
+
+              //flag checks if the user is getting or returning a bike
+              if (userHasBikeFlag == true) {
+                //checks that there are bikes available
+                availabilityData.forEach(availableBikes => {
+                  if (availableBikes.available_bikes > 0) {
+                    let standNum = availableBikes.number;
+                    bikeStands.push(standNum);
+                  }
+                });
+              } else {
+                //checks that there are bike stands available
+                availabilityData.forEach(availableBikes => {
+                  if (availableBikes.available_bike_stands > 3) {
+                    let standNum = availableBikes.number;
+                    bikeStands.push(standNum);
+                  }
+                });
+              }
+              //finds the closest bike stand based on geographical distance
+              stationData.forEach(station => {
+                if (bikeStands.includes(station.number)) {
+                  let R = 6371; // radius of earth in km
+                  let slat = station.position_lat;
+                  let slng = station.position_lng;
+                  let dLat = rad(slat - glat);
+                  let dLong = rad(slng - glng);
+                  let a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(rad(glat)) * Math.cos(rad(glat)) * Math.sin(dLong / 2) * Math.sin(dLong / 2);
+                  let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                  let d = R * c;
+                  //stores all the values in an array of arrays
+                    shortestGeoDistance.push([[slat, slng], d]);
+                }
+              });
+
+              //sorts the array and takes the top 8 values
+              shortestGeoDistance.sort((a, b) => a[1] - b[1]);
+              shortestGeoDistance = shortestGeoDistance.slice(0, 8);
+              let shortestStreetsDistance = Infinity;
+
+              //create an array of promises for each value of ShortestStreetsDistance to prevent the route()
+              // function from running before the actual shortest distance is found
+              const promises = shortestGeoDistance.map(distance => {
+                return new Promise((resolve, reject) => {
+                let sdLat = distance[0][0];
+                let sdLng = distance[0][1];
+                let closestDestination = {lat: sdLat, lng: sdLng};
+
+                //uses the Google Maps service to find the closest station by distance using streets rather
+                  // than geographical distance
+                this.directionsService.route(
+                {
+                  origin: this.originLatLng ,
+                  destination: closestDestination ,
+                  travelMode: this.travelMode,
+                },
+                (response, status) => {
+                  if (status === "OK") {
+
+                    // parsing response object to get distance
+                    let d =  response.routes[ 0 ].legs[ 0 ].distance.value;
+                    if (d < shortestStreetsDistance) {
+                      shortestStreetsDistance = d;
+                      this.destinationLatLng = {lat: sdLat, lng: sdLng};
+                    }
+                    // if the code ran ok, response of OK sent back and next iteration occurs
+                    resolve();
+                  } else {
+                    reject(status);
+                  }
+                });
+                });
+
+              });
+              // waits until all promises are resolved then this.route() is called
+              Promise.all(promises)
+                .then(() => {
+                  this.route();
+                })
+                .catch((error) => {
+                  console.error(error);
+                });
+            });
+          });
         }
       });
-
-      //finds the nearest station that has bikes available to the origin address
-      fetch("/stations")
-      .then((response) => response.json())
-      .then((stationData) => {
-        console.log("fetch response", typeof stationData);
-        fetch("/availability")
-        .then((response) => response.json())
-        .then((availabilityData) => {
-          let availableBikeStands = [];
-          let shortestDistance = Infinity;
-          let glat = this.originLatLng.lat();
-          let glng = this.originLatLng.lng();
-          console.log("fetch response", typeof availabilityData);
-
-          //checks that there are bikes available
-          availabilityData.forEach(availableBikes => {
-            if (availableBikes.available_bikes > 0) {
-              let standNum = availableBikes.number
-              availableBikeStands.push(standNum);
-            }
-          })
-
-          //finds the closest bike stand with bikes available
-          stationData.forEach(station => {
-            let R = 6371; // radius of earth in km
-            let slat = station.position_lat;
-            let slng = station.position_lng;
-            let dLat = rad(slat - glat);
-            let dLong = rad(slng - glng);
-            let a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(rad(glat)) * Math.cos(rad(glat)) * Math.sin(dLong / 2) * Math.sin(dLong / 2);
-            let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            let d = R * c;
-            if (availableBikeStands.includes(station.number)) {
-              if (d < shortestDistance) {
-                shortestDistance = d;
-                this.destinationLatLng = {lat: slat, lng: slng};
-                }
-              }
-          });
-          //runs the routing function to render the route
-          this.route();
-        });
-      });
-    });
   }
   route() {
+    if (!this.originLatLng || !this.destinationLatLng) {
+      return;
+    }
+
+    //finds and renders the route from origin to the closest bike stand
+    const me = this;
+    this.directionsService.route(
+      {
+        origin: this.originLatLng ,
+        destination: this.destinationLatLng ,
+        travelMode: this.travelMode,
+      },
+      (response, status) => {
+        if (status === "OK") {
+          me.directionsRenderer.setDirections(response);
+          //customises the route markers
+          if (typeof originMarker != "undefined"){
+            originMarker.setMap(null);
+          }
+          let leg = response.routes[ 0 ].legs[ 0 ];
+          makeMarker(leg.start_location, icons.start, "title");
+        } else {
+          window.alert("Directions request failed due to " + status);
+        }
+      }
+    );
+
+    //checks whether a click happened and removes the route
+    map.addListener('click', () => {
+        me.directionsRenderer.setMap(null);
+        originMarker.setMap(null);
+    });
 
     //custom markers for the routing rendering
     var icons = {
@@ -287,51 +413,15 @@ class AutocompleteDirectionsHandler {
     )
    };
 
-    if (!this.originLatLng || !this.destinationLatLng) {
-      return;
-    }
-
-    //finds and renders the route from origin to the closest bike stand
-    const me = this;
-    let directionsFlag = 0;
-    this.directionsService.route(
-      {
-        origin: this.originLatLng ,
-        destination: this.destinationLatLng ,
-        travelMode: this.travelMode,
-      },
-      (response, status) => {
-        if (status === "OK") {
-          me.directionsRenderer.setDirections(response);
-          directionsFlag = 1
-
-          //customises the route markers
-          let leg = response.routes[ 0 ].legs[ 0 ];
-          makeMarker(leg.start_location, icons.start, "title");
-        } else {
-          window.alert("Directions request failed due to " + status);
-        }
-      }
-    );
-
-    //flag checks whether there is a route displayed and if a click happens the route is removed
-    map.addListener('click', () => {
-      if (directionsFlag == 1) {
-        me.directionsRenderer.setMap(null);
-        directionsFlag = 0;
-      }
-    });
-
     //function to make custom markers for the routing
     function makeMarker( position, icon, title ) {
-      new google.maps.Marker({
+      originMarker = new google.maps.Marker({
       position: position,
       map: map,
       icon: icon,
       title: title
-    });
-}
-
+      });
+    }
   }
 }
 
@@ -383,6 +473,40 @@ function handleLocationError(browserHasGeolocation, currentLocationWindow, pos) 
       : "Error: Your browser doesn't support geolocation."
   );
   currentLocationWindow.open(map);
+}
+
+//removes journey planner options and shows forecast options with station data
+function forecastPlanner(){
+  document.getElementById("journey_planner").style.display = "none";
+  document.getElementById("forecast_planner").style.display = "block";
+
+  //populates station location dropdown
+  fetch("/stations")
+    .then((response) => response.json())
+    .then((stations_list) => {
+      let station_locations = ""
+      stations_list.forEach(station => {
+        station_locations += "<option value ='" + station.address + "'>"
+      });
+      document.getElementById('stations_list').innerHTML = station_locations;
+    });
+}
+
+//removes forecast options and displays journey planner options
+function journeyPlanner(){
+  document.getElementById("journey_planner").style.display = "block";
+  document.getElementById("forecast_planner").style.display = "none";
+}
+
+//gets inputs from forecast form
+function startPrediction() {
+  const station = document.getElementById("stations").value;
+  const date = document.getElementById("date").value;
+  const time = document.getElementById("time").value;
+
+  console.log(station);
+  console.log(date);
+  console.log(time);
 }
 
 window.initMap = initMap;
