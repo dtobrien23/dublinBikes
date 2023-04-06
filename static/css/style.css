@@ -96,3 +96,11 @@ body, html {
 #logo {
   float: right;
 }
+
+#journey_planner {
+    display: block;
+}
+
+#forecast_planner {
+    display: none;
+}

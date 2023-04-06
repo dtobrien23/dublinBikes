@@ -16,9 +16,16 @@
                 Probably rain
             </section>
             <h2>Inputs</h2>
-            <form>
+            <div>
+                <button type="button" id="journey">Journey Planner</button>
+                <button type="button" id="forecast">Forecast</button>
+            </div>
+
+            <form id="journey_planner">
+                <button type="button" id="getBike">Get Bike</button>
+                <button type="button" id="returnBike">Return Bike</button>
                 <label for="origin">Origin</label><input type=text id="origin" placeholder="Enter Origin">
-                <button type="button" id="start">Start!</button>
+                <button type="button" id="start_route">Start!</button>
                     <div id="mode-selector" class="controls">
                         <input type="radio" name="type" id="changemode-walking" checked="checked"/>
                         <label for="changemode-walking">Walking</label>
@@ -30,6 +37,15 @@
                         <label for="changemode-driving">Driving</label>
                     </div>
             </form>
+
+            <form id="forecast_planner">
+                <label for="stations">Stations</label><input type=text id="stations" placeholder="Enter Station" list="stations_list">
+                <datalist id="stations_list"></datalist>
+                <label for="date">Date</label><input type=date id="date">
+                <label for="time">Date</label><input type=time id="time">
+                <button type="button" id="start_prediction">Start!</button>
+            </form>
+
         </div>
 
 
