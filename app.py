@@ -37,7 +37,7 @@ def update_availability_cache():
     # get current time to determine latest update for station availability
     current_time = time.time()
     # get latest update for each station, current time - 5 minutes or 300 seconds
-    sql = f"select * from availability where timestamp >= ({current_time} - 1000);"
+    sql = f"select * from availability where timestamp >= ({current_time} - 300);"
     try:
         with engine.connect() as conn:
             rows = conn.execute(text(sql)).fetchall()
@@ -67,7 +67,7 @@ def get_weather():
     except:
         print(traceback.format_exc())
         return "error in get_stations", 404
-
+    
 
 # start the scheduler
 scheduler.start()

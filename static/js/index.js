@@ -24,7 +24,7 @@ function addMarkers(stations, availability) {
       // get the correct availability for this station
       if (thisStation.number == station.number) {
 
-        // set marker icon depending on availability
+        // display different marker icon depending on whether user is looking for bike or an empty stand
         const greenStation = {
           path: google.maps.SymbolPath.CIRCLE,
           fillColor: '#32A432',
@@ -51,13 +51,27 @@ function addMarkers(stations, availability) {
           strokeColor: '#FFFFFF',
           scale: 14
         };
-
-        if (thisStation.available_bikes == 0) {
-        marker.setIcon(redStation);
-        } else if (thisStation.available_bikes <= 5 && thisStation.available_bikes >= 1) {
-            marker.setIcon(orangeStation);
-        } else {
-            marker.setIcon(greenStation);
+        
+        // flag for determining markers depending on tab the user is on
+        let tabFlag = 0;
+        
+        // tab = 0 means user is on "want a bike" tab
+        if (tabFlag == 0) {
+          if (thisStation.available_bikes == 0) {
+          marker.setIcon(redStation);
+          } else if (thisStation.available_bikes <= 5 && thisStation.available_bikes >= 1) {
+              marker.setIcon(orangeStation);
+          } else {
+              marker.setIcon(greenStation);
+          }
+        } else {  // tab == 1 means user is on "want to return a bike" tab
+          if (thisStation.available_bike_stands == 0) {
+            marker.setIcon(redStation);
+            } else if (thisStation.available_bike_stands <= 5 && thisStation.available_bike_stands >= 1) {
+                marker.setIcon(orangeStation);
+            } else {
+                marker.setIcon(greenStation);
+            }
         }
 
         // create an info window for each marker that will open when clicked
