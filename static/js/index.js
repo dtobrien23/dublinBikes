@@ -7,7 +7,7 @@ let greenStation;
 let orangeStation;
 let redStation;
 let userHasBikeFlag = true;
-let latestAvailability = {};  // used to store current availability info in a global object
+let latestAvailability = [];  // used to store current availability info in a global object
 let markers = {}  // to store each map marker object
 
 
@@ -222,9 +222,9 @@ class AutocompleteDirectionsHandler {
 
       // if user wants bike, change markers to reflect bike availability
       latestAvailability.forEach(station => {
-
-        markers.forEach(marker => {
-          if (markers[station.number]) {
+        for (let key in markers) {
+          const marker = markers[key]; 
+          if (key == station.number) {
             if (station.available_bikes == 0) {
               marker.setIcon(redStation);
             } else if (station.available_bikes <= 5 && station.available_bikes >= 1) {
@@ -233,7 +233,7 @@ class AutocompleteDirectionsHandler {
                 marker.setIcon(greenStation);
             }
           }
-        });
+        };
       });
 
       userHasBikeFlag = true;
@@ -247,9 +247,9 @@ class AutocompleteDirectionsHandler {
 
       // if user wants to return bike, change markers to reflect stand availability 
       latestAvailability.forEach(station => {
-
-        markers.forEach(marker => {
-          if (markers[station.number]) {
+        for (let key in markers) {
+          const marker = markers[key]; 
+          if (key == station.number) {
             if (station.available_bike_stands == 0) {
               marker.setIcon(redStation);
             } else if (station.available_bike_stands <= 5 && station.available_bike_stands >= 1) {
@@ -258,7 +258,7 @@ class AutocompleteDirectionsHandler {
                 marker.setIcon(greenStation);
             }
           }
-        });
+        };
       });
 
       userHasBikeFlag = false;
