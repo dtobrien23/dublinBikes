@@ -3,7 +3,12 @@ let currentLocationWindow; // used to show the user where they are currently on 
 let stationWindow;  // used to create info window for each marker
 let openStationWindow;  // used to make sure only one info window is open at a time
 let originMarker;
+let greenStation;
+let orangeStation;
+let redStation;
 let userHasBikeFlag = true;
+let latestAvailability = [];  // used to store current availability info in a global object
+let markers = {}  // to store each map marker object
 
 
 function addMarkers(stations, availability) {
@@ -19,6 +24,7 @@ function addMarkers(stations, availability) {
       title: station.name,
       station_number: station.number,
     });
+    markers[station.number] = marker;
 
     // iterate through availability info for each station
     availability.forEach(thisStation => {
@@ -26,8 +32,8 @@ function addMarkers(stations, availability) {
       // get the correct availability for this station
       if (thisStation.number == station.number) {
 
-        // set marker icon depending on availability
-        const greenStation = {
+        // display different marker icon depending on whether user is looking for bike or an empty stand
+        greenStation = {
           path: google.maps.SymbolPath.CIRCLE,
           fillColor: '#32A432',
           fillOpacity: 1,
@@ -36,7 +42,7 @@ function addMarkers(stations, availability) {
           scale: 14
         };
           
-        const orangeStation = {
+        orangeStation = {
           path: google.maps.SymbolPath.CIRCLE,
           fillColor: '#EFB700',
           fillOpacity: 1,
@@ -45,7 +51,7 @@ function addMarkers(stations, availability) {
           scale: 14
         };
 
-        const redStation = {
+        redStation = {
           path: google.maps.SymbolPath.CIRCLE,
           fillColor: '#FF0000',
           fillOpacity: 1,
@@ -53,14 +59,16 @@ function addMarkers(stations, availability) {
           strokeColor: '#FFFFFF',
           scale: 14
         };
-
+        
+        // set initial markers as if user wants a bike 
         if (thisStation.available_bikes == 0) {
-        marker.setIcon(redStation);
+          marker.setIcon(redStation);
         } else if (thisStation.available_bikes <= 5 && thisStation.available_bikes >= 1) {
             marker.setIcon(orangeStation);
         } else {
             marker.setIcon(greenStation);
         }
+        
 
         // create an info window for each marker that will open when clicked
         let banking = "No";  // for card payment info
@@ -105,6 +113,7 @@ function getStationInformation() {
         .then((availabilityData) => {
           console.log("fetch response", typeof availabilityData);
           addMarkers(stationData, availabilityData);
+          Object.assign(latestAvailability, availabilityData);
           });
       });
 }
@@ -120,6 +129,7 @@ function getWeatherInformation() {
       const html = `${temp}&deg;C <img src="http://openweathermap.org/img/w/${weatherData[0].icon_code}.png">`;
       document.getElementById("weather").innerHTML = html;
   });
+  console.log(markers);
 } 
 
 getWeatherInformation()
@@ -226,6 +236,22 @@ class AutocompleteDirectionsHandler {
       const getBikeButton = document.getElementById("getBike");
       getBikeButton.style.backgroundColor = "#d3d3d3";
       getBikeButton.style.color = "black";
+      
+      // if user wants bike, change markers to reflect bike availability
+      latestAvailability.forEach(station => {
+        for (let key in markers) {
+          const marker = markers[key]; 
+          if (key == station.number) {
+            if (station.available_bikes == 0) {
+              marker.setIcon(redStation);
+            } else if (station.available_bikes <= 5 && station.available_bikes >= 1) {
+                marker.setIcon(orangeStation);
+            } else {
+                marker.setIcon(greenStation);
+            }
+          }
+        };
+      });
 
       userHasBikeFlag = true;
       this.setupPlaceChangedListener(originAutocomplete, "ORIG");
@@ -235,6 +261,7 @@ class AutocompleteDirectionsHandler {
   //Reroutes when return bike button is clicked
   returnBike(originAutocomplete) {
     document.getElementById("returnBike").addEventListener("click", () => {
+
       const getBikeButton = document.getElementById("getBike");
       getBikeButton.style.backgroundColor = "#094e78";
       getBikeButton.style.color = "white";
@@ -242,6 +269,22 @@ class AutocompleteDirectionsHandler {
       const returnBikeButton = document.getElementById("returnBike");
       returnBikeButton.style.backgroundColor = "#d3d3d3";
       returnBikeButton.style.color = "black";
+
+      // if user wants to return bike, change markers to reflect stand availability 
+      latestAvailability.forEach(station => {
+        for (let key in markers) {
+          const marker = markers[key]; 
+          if (key == station.number) {
+            if (station.available_bike_stands == 0) {
+              marker.setIcon(redStation);
+            } else if (station.available_bike_stands <= 5 && station.available_bike_stands >= 1) {
+                marker.setIcon(orangeStation);
+            } else {
+                marker.setIcon(greenStation);
+            }
+          }
+        };
+      });    
 
       userHasBikeFlag = false;
       this.setupPlaceChangedListener(originAutocomplete, "ORIG");
@@ -284,6 +327,7 @@ class AutocompleteDirectionsHandler {
             .then((availabilityData) => {
               let bikeStands = [];
               let shortestGeoDistance = [];
+              Object.assign(latestAvailability, availabilityData);
 
               //gets the lat and lng values for the chosen station from the dropdown
               let glat = this.originLatLng.lat();

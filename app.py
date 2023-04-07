@@ -67,7 +67,7 @@ def get_weather():
     except:
         print(traceback.format_exc())
         return "error in get_stations", 404
-
+    
 
 # start the scheduler
 scheduler.start()
