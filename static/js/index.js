@@ -148,6 +148,15 @@ function initMap() {
   //creates routing and autocompletion dropdown
   new AutocompleteDirectionsHandler(map);
 
+  //onload these buttons are shown as the default preselected options
+  const journey = document.getElementById("journey");
+  journey.style.backgroundColor = "#d3d3d3";
+  journey.style.color = "black";
+
+  const getBikeButton = document.getElementById("getBike");
+  getBikeButton.style.backgroundColor = "#d3d3d3";
+  getBikeButton.style.color = "black";
+
   //checks forecast button is clicked
   document.getElementById("forecast").addEventListener("click", forecastPlanner);
 
@@ -220,6 +229,14 @@ class AutocompleteDirectionsHandler {
   getBike(originAutocomplete) {
     document.getElementById("getBike").addEventListener("click", () => {
 
+      const returnBikeButton = document.getElementById("returnBike");
+      returnBikeButton.style.backgroundColor = "#094e78";
+      returnBikeButton.style.color = "white";
+
+      const getBikeButton = document.getElementById("getBike");
+      getBikeButton.style.backgroundColor = "#d3d3d3";
+      getBikeButton.style.color = "black";
+      
       // if user wants bike, change markers to reflect bike availability
       latestAvailability.forEach(station => {
         for (let key in markers) {
@@ -245,6 +262,14 @@ class AutocompleteDirectionsHandler {
   returnBike(originAutocomplete) {
     document.getElementById("returnBike").addEventListener("click", () => {
 
+      const getBikeButton = document.getElementById("getBike");
+      getBikeButton.style.backgroundColor = "#094e78";
+      getBikeButton.style.color = "white";
+
+      const returnBikeButton = document.getElementById("returnBike");
+      returnBikeButton.style.backgroundColor = "#d3d3d3";
+      returnBikeButton.style.color = "black";
+
       // if user wants to return bike, change markers to reflect stand availability 
       latestAvailability.forEach(station => {
         for (let key in markers) {
@@ -259,7 +284,7 @@ class AutocompleteDirectionsHandler {
             }
           }
         };
-      });
+      });    
 
       userHasBikeFlag = false;
       this.setupPlaceChangedListener(originAutocomplete, "ORIG");
@@ -511,6 +536,15 @@ function forecastPlanner(){
   document.getElementById("journey_planner").style.display = "none";
   document.getElementById("forecast_planner").style.display = "block";
 
+  const journey = document.getElementById("journey");
+  journey.style.backgroundColor = "#094e78";
+  journey.style.color = "white";
+
+  const forecast = document.getElementById("forecast");
+  forecast.style.backgroundColor = "#d3d3d3";
+  forecast.style.color = "black";
+
+
   //populates station location dropdown
   fetch("/stations")
     .then((response) => response.json())
@@ -527,6 +561,14 @@ function forecastPlanner(){
 function journeyPlanner(){
   document.getElementById("journey_planner").style.display = "block";
   document.getElementById("forecast_planner").style.display = "none";
+  const journey = document.getElementById("journey");
+  journey.style.backgroundColor = "#d3d3d3";
+  journey.style.color = "black";
+
+  const forecast = document.getElementById("forecast");
+  forecast.style.backgroundColor = "#094e78";
+  forecast.style.color = "white";
+
 }
 
 //gets inputs from forecast form
