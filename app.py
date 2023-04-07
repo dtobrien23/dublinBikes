@@ -55,23 +55,10 @@ def get_availability():
     else:
         return "no data available", 404
 
-
-@app.route("/current_weather")
+# get current weather and forecast data to display in the app
+@app.route("/weather")
 @functools.lru_cache(maxsize=128)
 def get_weather():
-    current_time = time.time()
-    sql = f"select * from current_weather where timestamp >= ({current_time} - 300);"
-    try:
-        with engine.connect() as conn:
-            rows = conn.execute(text(sql)).fetchall()
-            return jsonify([row._asdict() for row in rows])
-    except:
-        print(traceback.format_exc())
-        return "error in get_stations", 404
-
-@app.route("/forecast")
-@functools.lru_cache(maxsize=128)
-def get_forecast():
     url = f"https://api.openweathermap.org/data/2.5/onecall?lat={dbinfo.LAT}&lon={dbinfo.LON}&exclude=minutely,hourly&appid={dbinfo.APP_ID}"
     try:
         response = requests.get(url)

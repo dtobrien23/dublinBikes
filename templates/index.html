@@ -10,11 +10,32 @@
     <div class="app">
 
         <div class="inputs">
-            <h1>Dublin Bikes</h1>
-            <div class="image-container">
-            <img src="/static/images/bike.png" alt="bike"/>
-                </div>
-            <section id="weather">
+            <h1 style="margin-left: 15px;">Dublin Bikes <img src="/static/images/bike.png" alt="bike"/></h1>
+                
+            <section id="current-weather">
+                <section class="current-weather-info">
+                    <h1 id="current-temp" style="margin-bottom: 0;"></h1>
+                    <p id="min-max-temp" style="text-align: center;"></p>
+                </section>
+                <section class="current-weather-info" id="icon">
+                </section>
+                <section class="current-weather-info"  style="text-align: left;">
+                    <h2 id="desc" style="margin: 30px 0 0 0;"></h2>
+                    <p id="date"></p> 
+                </section>
+            </section>
+
+            <section id="display-forecast">
+                <section class="forecast-info" id="forecast1">
+                </section>
+                <section class="forecast-info" id="forecast2">
+                </section>
+                <section class="forecast-info" id="forecast3">
+                </section>
+                <section class="forecast-info" id="forecast4">
+                </section>
+                <section class="forecast-info" id="forecast5">
+                </section>
             </section>
 
             <h2>Select Mode</h2>
