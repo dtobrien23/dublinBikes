@@ -120,14 +120,53 @@ function getStationInformation() {
 
  // used to display current weather info
 function getWeatherInformation() {
-  fetch("/current_weather")
+  fetch("/weather")
     .then((response) => response.json())
     .then((weatherData) => {
       console.log("fetch response", typeof weatherData);
-      // convert from kelvin to celcius
-      var temp = Math.floor(weatherData[0].temp - 273.15);
-      const html = `${temp}&deg;C <img src="http://openweathermap.org/img/w/${weatherData[0].icon_code}.png">`;
-      document.getElementById("weather").innerHTML = html;
+
+      // current weather 
+
+      // description
+      let now = new Date();
+      let dateOptions = { weekday: 'long', day: 'numeric', month: 'long' };
+      let timeOptions = { hour: 'numeric', minute: 'numeric' };
+      let date = now.toLocaleDateString('en-IE', dateOptions);
+      let time = now.toLocaleTimeString('en-IE', timeOptions);
+      let html = `${date}<br>${time}`   
+      document.getElementById("date").innerHTML = html;
+
+      html = weatherData.current.weather[0].main;
+      document.getElementById("desc").innerHTML = html;
+
+      // icon
+      let icon = weatherData.current.weather[0].icon;
+      html = `<img src="http://openweathermap.org/img/w/${weatherData.current.weather[0].icon}.png" style="width: 100%; height: 120px;"></img>`
+      document.getElementById("icon").innerHTML = html;
+      
+      // temperature
+      let temp = Math.floor(weatherData.current.temp - 273.15);  // convert from kelvin to celcius
+      html = `${temp}&deg;`;
+      document.getElementById("current-temp").innerHTML = html;
+
+      
+      // weather forecast
+      
+      let forecast = weatherData.daily.slice(1);
+      let dayCount = 1;
+
+      forecast.forEach (day => {
+        icon = day.weather[0].icon;
+        temp = Math.floor(day.temp.max - 273.15);
+        let today = new Date(day.dt * 1000);
+        let dayOfWeek = today.toLocaleString('en-IE', { weekday: 'long' });
+
+        html = `<img src="http://openweathermap.org/img/w/${icon}.png" style="display: block; margin: 0 auto;">
+        <h4 style="text-align: center;">${temp}&deg;</h4><p style="font-size: 12px; text-align:center;">${dayOfWeek}</p>`
+        document.getElementById(`forecast${dayCount}`).innerHTML = html;
+        dayCount++;
+      })
+
   });
   console.log(markers);
 } 
