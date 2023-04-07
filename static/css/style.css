@@ -3,7 +3,7 @@
 }
 
 h1 {
-    margin: 20px 0 5px 0;
+    margin: 20px 0 5px 30px;
     font-size: 40px;
 }
 
@@ -24,75 +24,24 @@ body, html {
 
 .inputs {
     width: 450px;
-    margin: 0 0 0 20px;
     padding: 0 0 30px 0;
     text-align: left;
 }
 
 .inputs h2 {
-  margin: 20px 0 20px 0;
+    margin: 20px 0 5px 30px;
 }
 
-.custom-map-control-button {
-  background-color: #fff;
-  border: 0;
-  border-radius: 2px;
-  box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
-  margin: 10px;
-  padding: 0 0.5em;
-  font: 400 18px Roboto, Arial, sans-serif;
-  overflow: hidden;
-  height: 40px;
-  cursor: pointer;
-}
-.custom-map-control-button:hover {
-  background: rgb(235, 235, 235);
+.image-container {
+    display: flex;
+    justify-content: center;
 }
 
 #weather {
-  font-size: 30px;
+    font-size: 30px;
+    margin-left: 30px;
 }
 
-.controls {
-  margin-top: 10px;
-  border: 1px solid transparent;
-  border-radius: 2px 0 0 2px;
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  height: 32px;
-  outline: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-}
-
-#origin-input,
-#destination-input {
-  background-color: #fff;
-  font-family: Roboto;
-  font-size: 15px;
-  font-weight: 300;
-  margin-left: 12px;
-  padding: 0 11px 0 13px;
-  text-overflow: ellipsis;
-  width: 200px;
-}
-
-#origin-input:focus,
-#destination-input:focus {
-  border-color: #4d90fe;
-}
-
-#mode-selector {
-  color: #fff;
-  background-color: #4d90fe;
-  margin-left: 12px;
-  padding: 5px 11px 0px 11px;
-}
-
-#mode-selector label {
-  font-family: Roboto;
-  font-size: 13px;
-  font-weight: 300;
-}
 #logo {
   float: right;
 }
@@ -103,4 +52,112 @@ body, html {
 
 #forecast_planner {
     display: none;
+}
+
+button {
+    background-color: #094e78;
+    color: white;
+    border-radius: 5%;
+    border: 1px solid white;
+    margin: 5px 5px 5px 5px;
+    padding: 8px 8px 8px 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+}
+
+#user-selector {
+    display: flex;
+    justify-content: center;
+}
+
+#user-selector button {
+    width: 50%;
+    margin: 5px 2px 5px 2px;
+}
+
+#bike-status {
+    display: flex;
+    justify-content: center;
+}
+
+#bike-status button {
+    width: 50%;
+    margin: 0 2px 0 2px;
+}
+
+#location-start {
+    display: flex;
+    justify-content: center;
+}
+
+.location-label {
+    margin: 5px;
+}
+
+#origin {
+    padding: 5px 135px 5px 5px;
+    display: block;
+}
+
+.pac-target-input {
+    padding: 5px 135px 5px 5px;
+    display: block;
+}
+
+#start_route {
+    margin: 5px;
+    text-align: center;
+    width: 100%;
+    transition: all 0.5s;
+}
+
+#start_route:active {
+    background-color: #d3d3d3;
+    color: black;
+}
+
+#mode-selector {
+    display: flex;
+    margin: 0 5px 0 0;
+}
+
+.radio-selectors {
+    margin: 0 0 0 0;
+    width: 100px;
+    height: 40px;
+    position: relative;
+}
+
+.radio-selectors label,
+.radio-selectors input {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 5px;
+    padding: 0;
+}
+
+.radio-selectors input[type="radio"] {
+    opacity: 0.011;
+    z-index: 100;
+    cursor: pointer;
+}
+
+.radio-selectors label {
+    cursor: pointer;
+    z-index: 90;
+    line-height: 1.8em;
+    background-color: #094e78;
+    color: white;
+    border-radius: 5%;
+    border: 1px solid white;
+    text-align: center;
+}
+
+.radio-selectors input[type="radio"]:checked + label {
+    background: #d3d3d3;
+    color: black;
 }

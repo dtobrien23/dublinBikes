@@ -11,30 +11,42 @@
 
         <div class="inputs">
             <h1>Dublin Bikes</h1>
-            <img src="/static/images/bike.png"></h1>
+            <div class="image-container">
+            <img src="/static/images/bike.png" alt="bike"/>
+                </div>
             <section id="weather">
-                Probably rain
             </section>
-            <h2>Inputs</h2>
-            <div>
+
+            <h2>Select Mode</h2>
+            <div id="user-selector">
                 <button type="button" id="journey">Journey Planner</button>
                 <button type="button" id="forecast">Forecast</button>
             </div>
 
             <form id="journey_planner">
+                <div id="bike-status">
                 <button type="button" id="getBike">Get Bike</button>
                 <button type="button" id="returnBike">Return Bike</button>
-                <label for="origin">Origin</label><input type=text id="origin" placeholder="Enter Origin">
+                </div>
+                <div class="location-label">
+                <label for="origin">Current Location</label><input type=text id="origin" placeholder="Enter Current Location">
+                    </div>
+                <div id="location-start">
                 <button type="button" id="start_route">Start!</button>
+                    </div>
                     <div id="mode-selector" class="controls">
+                        <div class="radio-selectors">
                         <input type="radio" name="type" id="changemode-walking" checked="checked"/>
                         <label for="changemode-walking">Walking</label>
-
+                        </div>
+<div class="radio-selectors">
                         <input type="radio" name="type" id="changemode-transit" />
                         <label for="changemode-transit">Transit</label>
-
+</div>
+                        <div class="radio-selectors">
                         <input type="radio" name="type" id="changemode-driving" />
                         <label for="changemode-driving">Driving</label>
+                            </div>
                     </div>
             </form>
 
