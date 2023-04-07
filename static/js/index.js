@@ -139,11 +139,6 @@ function getWeatherInformation() {
       html = weatherData.current.weather[0].main;
       document.getElementById("desc").innerHTML = html;
 
-      let maxTemp = Math.floor(weatherData.daily[0].temp.max - 273.15);
-      let minTemp = Math.floor(weatherData.daily[0].temp.min - 273.15);
-      html = `Max: ${maxTemp}&deg;<br>Min: ${minTemp}&deg;`;
-      document.getElementById("min-max-temp").innerHTML = html;
-
       // icon
       let icon = weatherData.current.weather[0].icon;
       html = `<img src="http://openweathermap.org/img/w/${weatherData.current.weather[0].icon}.png" style="width: 100%; height: 120px;"></img>`

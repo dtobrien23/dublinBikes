@@ -166,12 +166,6 @@ button {
     display: flex;
     height: 100px;
     overflow: hidden;
-    background-color: #094e78;
-    color: white;
-    border-radius: 5%;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    border: 1px solid white;
   }
   
 .current-weather-info {
@@ -182,15 +176,8 @@ button {
     display: flex;
     height: 90px;
     overflow: hidden;
-    background-color: #094e78;
-    color: white;
-    border-radius: 5%;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    border: 1px solid white;
   }
 
   .forecast-info {
     flex: 1;
-    border: solid white 1px;
   }
