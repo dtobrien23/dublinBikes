@@ -5,6 +5,7 @@ from sqlalchemy import create_engine, text
 import traceback
 import time
 import dbinfo
+import requests
 
 app = Flask(__name__)
 
@@ -67,7 +68,18 @@ def get_weather():
     except:
         print(traceback.format_exc())
         return "error in get_stations", 404
-    
+
+@app.route("/forecast")
+@functools.lru_cache(maxsize=128)
+def get_forecast():
+    url = f"https://api.openweathermap.org/data/2.5/onecall?lat={dbinfo.LAT}&lon={dbinfo.LON}&exclude=minutely,hourly&appid={dbinfo.APP_ID}"
+    try:
+        response = requests.get(url)
+        forecast = response.json()
+        return forecast
+    except:
+        print(traceback.format_exc())
+        return "error in get_stations", 404
 
 # start the scheduler
 scheduler.start()
