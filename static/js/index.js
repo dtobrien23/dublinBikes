@@ -21,7 +21,7 @@ function addMarkers(stations, availability) {
         lng: station.position_lng,
       },
       map: map,
-      title: station.name,
+      title: station.address,
       station_number: station.number,
     });
     markers[station.number] = marker;
@@ -76,7 +76,7 @@ function addMarkers(stations, availability) {
           banking = "Yes";
         }
         marker.stationWindow = new google.maps.InfoWindow({
-        content: `<div style="color: black;"><h1>${station.name}</h1><p>Status: ${thisStation.status}<br>Available bikes: ${thisStation.available_bikes}<br>
+        content: `<div style="color: black;"><h1>${station.address}</h1><p>Status: ${thisStation.status}<br>Available bikes: ${thisStation.available_bikes}<br>
                   Available stands: ${thisStation.available_bike_stands}<br>Card payment: ${banking}</p></div>`,
         });
       }
@@ -90,6 +90,7 @@ function addMarkers(stations, availability) {
       }
       marker.stationWindow.open(map, marker);
       openStationWindow = marker.stationWindow;
+      document.getElementById("stations").value = marker.title;
     });
   });
 
@@ -182,7 +183,6 @@ function initMap() {
 
   bikeLayer.setMap(map);
   getStationInformation();
-  //display_current_location(map); - currently disabled
 
   //creates routing and autocompletion dropdown
   new AutocompleteDirectionsHandler(map);
@@ -255,6 +255,7 @@ class AutocompleteDirectionsHandler {
     this.startJourneyButton(originAutocomplete);
     this.getBike(originAutocomplete);
     this.returnBike(originAutocomplete);
+    this.findCurrentLocation();
   }
 
   //Routes if start is clicked
@@ -289,7 +290,7 @@ class AutocompleteDirectionsHandler {
                 marker.setIcon(greenStation);
             }
           }
-        };
+        }
       });
 
       userHasBikeFlag = true;
@@ -322,7 +323,7 @@ class AutocompleteDirectionsHandler {
                 marker.setIcon(greenStation);
             }
           }
-        };
+        }
       });    
 
       userHasBikeFlag = false;
@@ -338,6 +339,57 @@ class AutocompleteDirectionsHandler {
       this.travelMode = mode;
       this.setupPlaceChangedListener(originAutocomplete, "ORIG");
     });
+  }
+
+  findCurrentLocation() {
+    const geocoder = new google.maps.Geocoder();
+    currentLocationWindow = new google.maps.InfoWindow({
+      content: `<div style="color: black;"><p>Current Location</p></div>`,
+    });
+
+    document.getElementById("current_location").addEventListener("click", () => {
+      // Try HTML5 geolocation.
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const pos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+
+          console.log(pos);
+          currentLocationWindow.setPosition(pos);
+          currentLocationWindow.open(map);
+          map.setCenter(pos);
+
+          geocoder.geocode( { location: pos}, function(results, status) {
+            if (status == 'OK') {
+              document.getElementById("origin").value = results[0].formatted_address;
+            } else {
+                alert('Geocode was not successful for the following reason: ' + status);
+            }
+          });
+          },
+        () => {
+          handleLocationError(true, currentLocationWindow, map.getCenter());
+        }
+      );
+    } else {
+      // Browser doesn't support Geolocation
+      handleLocationError(false, currentLocationWindow, map.getCenter());
+    }
+    });
+  }
+
+  // runs if the user doesn't allow their location to be shared or browser does not support geolocation
+  handleLocationError(browserHasGeolocation, currentLocationWindow, pos) {
+    currentLocationWindow.setPosition(pos);
+    currentLocationWindow.setContent(
+      browserHasGeolocation
+        ? "Error: The Geolocation service failed."
+        : "Error: Your browser doesn't support geolocation."
+    );
+    currentLocationWindow.open(map);
   }
 
   setupPlaceChangedListener(autocomplete) {
@@ -410,7 +462,7 @@ class AutocompleteDirectionsHandler {
 
               //sorts the array and takes the top 8 values
               shortestGeoDistance.sort((a, b) => a[1] - b[1]);
-              shortestGeoDistance = shortestGeoDistance.slice(0, 8);
+              shortestGeoDistance = shortestGeoDistance.slice(0, 3);
               let shortestStreetsDistance = Infinity;
 
               //create an array of promises for each value of ShortestStreetsDistance to prevent the route()
@@ -520,56 +572,6 @@ class AutocompleteDirectionsHandler {
   }
 }
 
-// Currently disabled
-// displays the current location of the user
-function display_current_location(map) {
-  // creates an info window that shows the user there current location
-  currentLocationWindow = new google.maps.InfoWindow({
-      content: `<div style="color: black;"><p>Current Location</p></div>`,
-    });
-
-
-  const locationButton = document.getElementById('stations');
-
-  locationButton.innerHTMl = "<option value ='Current Location'>";
-  locationButton.classList.add("custom-map-control-button");
-
-  locationButton.addEventListener("click", () => {
-    // Try HTML5 geolocation.
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const pos = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
-
-          currentLocationWindow.setPosition(pos);
-          currentLocationWindow.open(map);
-          map.center(pos);
-        },
-        () => {
-          handleLocationError(true, currentLocationWindow, map.getCenter());
-        }
-      );
-    } else {
-      // Browser doesn't support Geolocation
-      handleLocationError(false, currentLocationWindow, map.getCenter());
-    }
-  });
-}
-
-// runs if the user doesn't allow their location to be shared
-function handleLocationError(browserHasGeolocation, currentLocationWindow, pos) {
-  currentLocationWindow.setPosition(pos);
-  currentLocationWindow.setContent(
-    browserHasGeolocation
-      ? "Error: The Geolocation service failed."
-      : "Error: Your browser doesn't support geolocation."
-  );
-  currentLocationWindow.open(map);
-}
-
 //removes journey planner options and shows forecast options with station data
 function forecastPlanner(){
   document.getElementById("journey_planner").style.display = "none";
@@ -613,8 +615,8 @@ function journeyPlanner(){
 //gets inputs from forecast form
 function startPrediction() {
   const station = document.getElementById("stations").value;
-  const date = document.getElementById("date").value;
-  const time = document.getElementById("time").value;
+  const date = document.getElementById("forecast_date").value;
+  const time = document.getElementById("forecast_time").value;
 
   console.log(station);
   console.log(date);
