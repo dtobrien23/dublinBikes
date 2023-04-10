@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 from apscheduler.schedulers.background import BackgroundScheduler
 import functools
 from sqlalchemy import create_engine, text
@@ -6,6 +6,7 @@ import traceback
 import time
 import dbinfo
 import requests
+import pickle
 
 app = Flask(__name__)
 
@@ -67,6 +68,20 @@ def get_weather():
     except:
         print(traceback.format_exc())
         return "error in get_stations", 404
+
+# get user input to make availability prediction
+@app.route("/predicted_availability", methods=["POST"])
+def predict_availability():
+    # x1 = float(request.form["x1"])
+    # x2 = float(request.form["x2"])
+    # x3 = float(request.form["x3"])
+    # x4 = float(request.form["x4"])
+    # x5 = float(request.form["x5"])
+
+    model = pickle.load(open("predict_availability_model", "rb"))
+    prediction = model.predict() # (x1, x2...)
+    return prediction.json()
+
 
 # start the scheduler
 scheduler.start()
