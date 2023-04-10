@@ -7,86 +7,91 @@
 {% endblock %}
 
 {% block body %}
-    <div class="app">
+<div class="app">
 
-        <div class="inputs">
-            <h1 style="margin-left: 15px;">Dublin Bikes <img src="/static/images/bike.png" alt="bike"/></h1>
-                
-            <section id="current-weather">
-                <section class="current-weather-info">
-                    <h1 id="current-temp" style="font-size: 60px; margin-top: 30px; margin-bottom: 0;"></h1>
-                </section>
-                <section class="current-weather-info" id="icon">
-                </section>
-                <section class="current-weather-info"  style="text-align: left; margin-left: 5px;">
-                    <h2 id="desc" style="margin: 30px 0 0 0;"></h2>
-                    <p id="date"></p> 
-                </section>
+    <div class="inputs">
+        <h1 style="margin-left: 15px;">Dublin Bikes <img src="/static/images/bike.png" alt="bike"/></h1>
+
+        <section id="current-weather">
+            <section class="current-weather-info">
+                <h1 id="current-temp" style="font-size: 60px; margin-top: 30px; margin-bottom: 0;"></h1>
             </section>
-
-            <section id="display-forecast">
-                <section class="forecast-info" id="forecast1">
-                </section>
-                <section class="forecast-info" id="forecast2">
-                </section>
-                <section class="forecast-info" id="forecast3">
-                </section>
-                <section class="forecast-info" id="forecast4">
-                </section>
-                <section class="forecast-info" id="forecast5">
-                </section>
+            <section class="current-weather-info" id="icon">
             </section>
+            <section class="current-weather-info" style="text-align: left; margin-left: 5px;">
+                <h2 id="desc" style="margin: 30px 0 0 0;"></h2>
+                <p id="date"></p>
+            </section>
+        </section>
 
-            <h2>Select Mode</h2>
-            <div id="user-selector">
-                <button type="button" id="journey">Journey Planner</button>
-                <button type="button" id="forecast">Forecast</button>
-            </div>
+        <section id="display-forecast">
+            <section class="forecast-info" id="forecast1">
+            </section>
+            <section class="forecast-info" id="forecast2">
+            </section>
+            <section class="forecast-info" id="forecast3">
+            </section>
+            <section class="forecast-info" id="forecast4">
+            </section>
+            <section class="forecast-info" id="forecast5">
+            </section>
+        </section>
 
-            <form id="journey_planner">
-                <div id="bike-status">
-                <button type="button" id="getBike">Get Bike</button>
-                <button type="button" id="returnBike">Return Bike</button>
-                </div>
-                <div class="location-label">
-                <label for="origin">Current Location</label><input type=text id="origin" placeholder="Enter Current Location">
-                    </div>
-                <div id="location-start">
-                <button type="button" id="start_route">Start!</button>
-                    </div>
-                    <div id="mode-selector" class="controls">
-                        <div class="radio-selectors">
-                        <input type="radio" name="type" id="changemode-walking" checked="checked"/>
-                        <label for="changemode-walking">Walking</label>
-                        </div>
-<div class="radio-selectors">
-                        <input type="radio" name="type" id="changemode-transit" />
-                        <label for="changemode-transit">Transit</label>
-</div>
-                        <div class="radio-selectors">
-                        <input type="radio" name="type" id="changemode-driving" />
-                        <label for="changemode-driving">Driving</label>
-                            </div>
-                    </div>
-            </form>
-
-            <form id="forecast_planner">
-                <label for="stations">Stations</label><input type=text id="stations" placeholder="Enter Station" list="stations_list">
-                <datalist id="stations_list"></datalist>
-                <label for="date">Date</label><input type=date id="date">
-                <label for="time">Date</label><input type=time id="time">
-                <button type="button" id="start_prediction">Start!</button>
-            </form>
-
+        <h2>Select Mode</h2>
+        <div id="user-selector">
+            <button type="button" id="journey">Journey Planner</button>
+            <button type="button" id="forecast">Forecast</button>
         </div>
 
+        <form id="journey_planner">
+            <div id="bike-status">
+                <button type="button" id="getBike">Get Bike</button>
+                <button type="button" id="returnBike">Return Bike</button>
+            </div>
+            <div class="location-label">
+                <label for="origin">Current Location</label><input type=text id="origin"
+                                                                   placeholder="Enter Current Location">
+                <button type="button" id="current_location">CL</button>
+            </div>
+            <div id="location-start">
+                <button type="button" id="start_route">Start!</button>
+            </div>
+            <div id="mode-selector" class="controls">
+                <div class="radio-selectors">
+                    <input type="radio" name="type" id="changemode-walking" checked="checked"/>
+                    <label for="changemode-walking">Walking</label>
+                </div>
+                <div class="radio-selectors">
+                    <input type="radio" name="type" id="changemode-transit"/>
+                    <label for="changemode-transit">Transit</label>
+                </div>
+                <div class="radio-selectors">
+                    <input type="radio" name="type" id="changemode-driving"/>
+                    <label for="changemode-driving">Driving</label>
+                </div>
+            </div>
+        </form>
 
-        <div id="map"></div>
-
-            <script
-            src="https://maps.googleapis.com/maps/api/js?key={{ gmkey }}&libraries=places&callback=initMap&v=weekly"
-            defer
-            ></script>
+        <form id="forecast_planner">
+            <label for="stations">Stations</label><input type=text id="stations" placeholder="Enter Station"
+                                                         list="stations_list">
+            <datalist id="stations_list"></datalist>
+            <label for="forecast_date">Date</label><input type=date id="forecast_date">
+            <label for="forecast_time">Time</label><input type=time id="forecast_time">
+            <div id="forecast-start">
+                <button type="button" id="start_prediction">Start!</button>
+            </div>
+        </form>
 
     </div>
+
+
+    <div id="map"></div>
+
+    <script
+            src="https://maps.googleapis.com/maps/api/js?key={{ gmkey }}&libraries=places&callback=initMap&v=weekly"
+            defer
+    ></script>
+
+</div>
 {% endblock %}

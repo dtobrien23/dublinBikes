@@ -95,13 +95,12 @@ button {
 }
 
 #origin {
-    padding: 5px 135px 5px 5px;
+    padding: 5px 0 5px 5px;
     display: block;
 }
 
 .pac-target-input {
-    padding: 5px 135px 5px 5px;
-    display: block;
+  width: 285px;
 }
 
 #start_route {
@@ -170,14 +169,54 @@ button {
   
 .current-weather-info {
     flex: 1;
-  }
+}
 
 #display-forecast {
     display: flex;
     height: 90px;
     overflow: hidden;
-  }
+}
 
-  .forecast-info {
+.forecast-info {
     flex: 1;
-  }
+}
+
+#forecast_planner {
+    padding: 5px 0 5px 5px;
+}
+
+#forecast-start {
+    display: flex;
+    justify-content: center;
+    padding: 5px 5px 5px 5px;
+}
+
+#start_prediction {
+    margin: 5px;
+    text-align: center;
+    width: 100%;
+    transition: all 0.5s;
+}
+
+#start_prediction:active {
+    background-color: #d3d3d3;
+    color: black;
+}
+
+#stations {
+    display:block;
+    padding: 5px 5px 5px 5px;
+    width: 275px;
+}
+
+#forecast_date {
+    display: block;
+    padding: 5px 5px 5px 5px;
+    width: 275px;
+}
+
+#forecast_time {
+    display: block;
+    padding: 5px 5px 5px 5px;
+    width: 275px;
+}
