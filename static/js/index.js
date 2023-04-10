@@ -360,7 +360,6 @@ class AutocompleteDirectionsHandler {
             lng: position.coords.longitude,
           };
 
-          console.log(pos);
           currentLocationWindow.setPosition(pos);
           currentLocationWindow.open(map);
           map.setCenter(pos);
@@ -375,24 +374,14 @@ class AutocompleteDirectionsHandler {
           },
         () => {
           handleLocationError(true, currentLocationWindow, map.getCenter());
-        }
+        },
+          {enableHighAccuracy: true}
       );
     } else {
       // Browser doesn't support Geolocation
       handleLocationError(false, currentLocationWindow, map.getCenter());
     }
     });
-  }
-
-  // runs if the user doesn't allow their location to be shared or browser does not support geolocation
-  handleLocationError(browserHasGeolocation, currentLocationWindow, pos) {
-    currentLocationWindow.setPosition(pos);
-    currentLocationWindow.setContent(
-      browserHasGeolocation
-        ? "Error: The Geolocation service failed."
-        : "Error: Your browser doesn't support geolocation."
-    );
-    currentLocationWindow.open(map);
   }
 
   setupPlaceChangedListener(autocomplete) {
@@ -404,6 +393,10 @@ class AutocompleteDirectionsHandler {
       query: originAddress,
       fields: ['geometry'],
       };
+
+      if (typeof currentLocationWindow != "undefined"){
+            currentLocationWindow.setMap(null);
+          }
 
       //service returns the geocoordinates of the inputted place
       let service = new google.maps.places.PlacesService(this.map);
@@ -536,7 +529,7 @@ class AutocompleteDirectionsHandler {
             originMarker.setMap(null);
           }
           let leg = response.routes[ 0 ].legs[ 0 ];
-          makeMarker(leg.start_location, icons.start, "title");
+          makeMarker(leg.start_location, icons.start, "Current Location");
         } else {
           window.alert("Directions request failed due to " + status);
         }
@@ -574,6 +567,18 @@ class AutocompleteDirectionsHandler {
     }
   }
 }
+
+// runs if the user doesn't allow their location to be shared or browser does not support geolocation
+ function handleLocationError(browserHasGeolocation, currentLocationWindow, pos) {
+    currentLocationWindow.setPosition(pos);
+    currentLocationWindow.setContent(
+      browserHasGeolocation
+        ? "Error: The Geolocation service failed."
+        : "Error: Your browser doesn't support geolocation."
+    );
+    currentLocationWindow.open(map);
+  }
+
 
 //removes journey planner options and shows forecast options with station data
 function forecastPlanner(){
