@@ -341,6 +341,9 @@ class AutocompleteDirectionsHandler {
     });
   }
 
+  //on click this autopopulates the input box with the users current location and sets it as the origin
+  //Ref: https://developers.google.com/maps/documentation/javascript/geocoding;
+  // https://developers.google.com/maps/documentation/javascript/geolocation
   findCurrentLocation() {
     const geocoder = new google.maps.Geocoder();
     currentLocationWindow = new google.maps.InfoWindow({
