@@ -72,14 +72,14 @@
             </div>
         </form>
 
-        <form id="forecast_planner">
-            <label for="stations">Stations</label><input type=text id="stations" placeholder="Enter Station"
+        <form id="forecast_planner" method="POST" action="/forecast_form">
+            <label for="stations">Stations</label><input type=text id="stations" name="stations" placeholder="Enter Station"
                                                          list="stations_list">
             <datalist id="stations_list"></datalist>
-            <label for="forecast_date">Date</label><input type=date id="forecast_date">
-            <label for="forecast_time">Time</label><input type=time id="forecast_time">
+            <label for="forecast_date">Date</label><input type=date id="forecast_date" name="forecast_date">
+            <label for="forecast_time">Time</label><input type=time id="forecast_time" name="forecast_time">
             <div id="forecast-start">
-                <button type="button" id="start_prediction">Start!</button>
+                <button type="submit" id="start_prediction">Start!</button>
             </div>
         </form>
 
