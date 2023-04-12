@@ -70,17 +70,22 @@ def get_weather():
         return "error in get_stations", 404
 
 # get user input to make availability prediction
-@app.route("/predicted_availability", methods=["POST"])
+@app.route("/predicted_availability", methods=["GET"])
 def predict_availability():
-    # x1 = float(request.form["x1"])
-    # x2 = float(request.form["x2"])
-    # x3 = float(request.form["x3"])
-    # x4 = float(request.form["x4"])
-    # x5 = float(request.form["x5"])
+    x1 = request.args.get("stations")
+    print(type(x1))
+    print(x1)
+    x2 = float(request.form["forecast_date"])
+    x3 = float(request.form["forecast_time"])
 
     model = pickle.load(open("predict_availability_model", "rb"))
-    prediction = model.predict() # (x1, x2...)
-    return prediction.json()
+    prediction = model.predict(x1, x2, x3) # (x1, x2...)
+
+    try:
+        return x1
+    except:
+        print(traceback.format_exc())
+        return "error in predict_availability", 404
 
 
 # start the scheduler
