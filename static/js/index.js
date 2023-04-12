@@ -600,7 +600,8 @@ function forecastPlanner(){
     .then((stations_list) => {
       let station_locations = ""
       stations_list.forEach(station => {
-        station_locations += "<option value ='" + station.address + "'>"
+        let address = station.address.replace("'", "&#39;"); // html would not read " ' " chars in station name
+        station_locations += "<option value ='" + address + "'>";
       });
       document.getElementById('stations_list').innerHTML = station_locations;
     });
@@ -617,18 +618,29 @@ function journeyPlanner(){
   const forecast = document.getElementById("forecast");
   forecast.style.backgroundColor = "#094e78";
   forecast.style.color = "white";
-
 }
 
 //gets inputs from forecast form
-function startPrediction() {
-  const station = document.getElementById("stations").value;
-  const date = document.getElementById("forecast_date").value;
-  const time = document.getElementById("forecast_time").value;
-
-  console.log(station);
-  console.log(date);
-  console.log(time);
+function startPrediction(event) {
+  event.preventDefault();
+  const form = document.getElementById("forecast_planner");
+  const data = new FormData(form);
+  fetch("/forecast_form", {
+    method: "POST",
+    body: data,
+  })
+    .then(response => {
+      if (response.ok) {
+        return response.text();
+      }
+      throw new Error("Network response was not okay");
+    })
+    .then(data => {
+      console.log(data);
+    })
+    .catch(error => {
+      console.error("Error submitting form", error);
+    });
 }
 
 window.initMap = initMap;
