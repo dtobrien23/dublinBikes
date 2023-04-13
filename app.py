@@ -54,6 +54,7 @@ def stations_endpoint():
         return "error in get_stations", 404
 
 
+# to keep data up to date
 scheduler = BackgroundScheduler()
 
 @scheduler.scheduled_job('interval', minutes = 5)
@@ -88,6 +89,9 @@ def weather_endpoint():
     else:
         return "error in get_weather", 404
 
+
+# start the scheduler
+scheduler.start()
 
 # get user input to make availability prediction
 @app.route("/forecast_form", methods=["POST"])
@@ -126,9 +130,6 @@ def predict_availability():
     start_of_day_timestamp = start_of_day.timestamp()
     end_of_day_timestamp = end_of_day.timestamp()
     
-
-    
-
     # month and day of week
     month = date.month
     x_vars.append(month) # WORKING
@@ -157,19 +158,12 @@ def predict_availability():
     data_frame.append(x_vars)
     x = pd.DataFrame(data_frame, columns=["number", "month", "day", "hour", "temp", "weather_desc", "wind_speed", "wind_deg"])
     
-    
     for model_name, model in models.items():
         if model_name == station_num:
             prediction = model.predict(x)
             pred_float = prediction.item()
             pred_bikes = int(round(pred_float))
             return jsonify(pred_bikes)
-
-
-
-
-# start the scheduler
-scheduler.start()
     
 
 if __name__ == "__main__":

@@ -12,6 +12,7 @@ h1 {
     width: 100%;
     border-left: white solid 5px;
     border-bottom: white solid 5px;
+    display: block;
   }  
 
 body, html {
@@ -30,20 +31,6 @@ body, html {
 
 .inputs h2 {
     margin: 20px 0 5px 30px;
-}
-
-.image-container {
-    display: flex;
-    justify-content: center;
-}
-
-#weather {
-    font-size: 30px;
-    margin-left: 30px;
-}
-
-#logo {
-  float: right;
 }
 
 #journey_planner {
@@ -164,8 +151,17 @@ button {
 #current-weather {
     display: flex;
     height: 100px;
-    overflow: hidden;
   }
+
+#current-temp {
+    font-size: 60px; 
+    margin-top: 30px; 
+    margin-bottom: 0;
+}
+
+#desc {
+    margin: 20px 0 0 0;
+}
   
 .current-weather-info {
     flex: 1;
