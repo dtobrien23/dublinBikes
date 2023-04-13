@@ -31,7 +31,7 @@ def get_stations():
     except:
         print(traceback.format_exc())
         return None
-
+    
 
 def get_weather():
     url = f"https://api.openweathermap.org/data/2.5/onecall?lat={dbinfo.LAT}&lon={dbinfo.LON}&exclude=minutely,hourly&appid={dbinfo.APP_ID}"
@@ -42,7 +42,7 @@ def get_weather():
     except:
         print(traceback.format_exc())
         return None
-
+    
 
 @app.route("/stations")
 @functools.lru_cache(maxsize=128)
@@ -78,6 +78,7 @@ def get_availability():
         return jsonify(app.config['cached_availability'])
     else:
         return "no data available", 404
+
 
 # get current weather and forecast data to display in the app
 @app.route("/weather")
@@ -116,7 +117,7 @@ def predict_availability():
         if station["address"] == station_name:
             station_num = station["number"]
             x_vars.append(station_num) # WORKING
-
+    
     # datetime object to get timestamp, year, month, and day of week
     date_format = "%Y-%m-%d"
     date = datetime.strptime(date_str, date_format)
@@ -129,20 +130,13 @@ def predict_availability():
     end_of_day = dt.replace(hour=23, minute=59, second=59, microsecond=999999)
     start_of_day_timestamp = start_of_day.timestamp()
     end_of_day_timestamp = end_of_day.timestamp()
-<<<<<<< HEAD
     
-=======
-
-
-
-
->>>>>>> d895a31cde986c4a5c1a69495cfddc4587f3b944
     # month and day of week
     month = date.month
     x_vars.append(month) # WORKING
-    day_of_week = date.weekday()
+    day_of_week = date.weekday() 
     x_vars.append(day_of_week) # WORKING
-
+    
     # time
     the_time = time.strptime(time_str, "%H:%M")
     hour = time.strftime('%H',the_time)
@@ -164,12 +158,7 @@ def predict_availability():
     data_frame = []
     data_frame.append(x_vars)
     x = pd.DataFrame(data_frame, columns=["number", "month", "day", "hour", "temp", "weather_desc", "wind_speed", "wind_deg"])
-<<<<<<< HEAD
     
-=======
-
-
->>>>>>> d895a31cde986c4a5c1a69495cfddc4587f3b944
     for model_name, model in models.items():
         if model_name == station_num:
             prediction = model.predict(x)
