@@ -538,8 +538,8 @@ class AutocompleteDirectionsHandler {
 
     //checks whether a click happened and removes the route
     map.addListener('click', () => {
-        me.directionsRenderer.setMap(null);
-        originMarker.setMap(null);
+      me.directionsRenderer.setDirections({routes: []});
+      originMarker.setMap(null);
     });
 
     //custom markers for the routing rendering
