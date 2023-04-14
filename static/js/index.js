@@ -10,7 +10,6 @@ let userHasBikeFlag = true;
 let latestAvailability = [];  // used to store current availability info in a global object
 let markers = {}  // to store each map marker object
 
-
 function addMarkers(stations, availability) {
 
   // add a marker to the map for each station
@@ -631,6 +630,7 @@ function startPrediction(event) {
   })
     .then(response => {
       if (response.ok) {
+        displayCharts();
         return response.text();
       }
       throw new Error("Network response was not okay");
@@ -640,6 +640,65 @@ function startPrediction(event) {
     })
     .catch(error => {
       console.error("Error submitting form", error);
+    });
+}
+
+function displayForecast(){
+  const forecast_date = document.getElementById("forecast_date").value;
+  const forecast_time = document.getElementById("forecast_date").value;
+}
+
+function displayCharts() {
+  document.getElementById("map").style.display = "none";
+  document.getElementById("chartContainer").style.display = "block";
+  const hourly = document.getElementById("pred_hourly");
+  hourly.style.display = "block";
+  const daily = document.getElementById("pred_daily");
+  daily.style.display = "block";
+  fetch("/predicted_availability")
+    .then((response) => response.json())
+    .then((predictions) => {
+      let pred_hourly = Object.values(predictions["pred_avail_hourly"]);
+      pred_hourly.splice(2, 4);
+      pred_hourly.push(pred_hourly.shift());
+
+      let pred_daily = Object.values(predictions["pred_avail_daily"]);
+
+      new Chart(hourly, {
+    type: 'bar',
+    data: {
+      labels: ['5am', '6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm',
+        '7pm', '8pm', '9pm', '10pm', '11pm', '12am'],
+      datasets: [{
+        data: pred_hourly,
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+      new Chart(daily, {
+    type: 'bar',
+    data: {
+      labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      datasets: [{
+        data: pred_daily,
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
     });
 }
 

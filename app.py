@@ -126,9 +126,6 @@ def predict_availability():
     start_of_day_timestamp = start_of_day.timestamp()
     end_of_day_timestamp = end_of_day.timestamp()
 
-
-
-
     # month and day of week
     month = date.month
     x_vars.append(month) # WORKING
@@ -153,24 +150,30 @@ def predict_availability():
     # predict
     with open("models.pkl", "rb") as f:
         models = pickle.load(f)
-    data_frame = []
-    data_frame.append(x_vars)
-    x = pd.DataFrame(data_frame, columns=["number", "month", "day", "hour", "temp", "weather_desc", "wind_speed", "wind_deg"])
 
+    data_frame = [x_vars]
 
+    pred_bikes = {"station_name": station_name, "user_day": {"date_str": date_str, "day": day_of_week}, "user_hour": {"time_str": time_str, "hour": hour},  "pred_avail_hourly": {}, "pred_avail_daily": {}}
     for model_name, model in models.items():
         if model_name == station_num:
-            prediction = model.predict(x)
-            pred_float = prediction.item()
-            pred_bikes = int(round(pred_float))
+            for hour in range(0, 24):
+                data_frame[0][3] = hour
+                x = pd.DataFrame(data_frame, columns=["number", "month", "day", "hour", "temp", "weather_desc", "wind_speed", "wind_deg"])
+                prediction = model.predict(x)
+                pred_float = prediction.item()
+                pred_bikes["pred_avail_hourly"][hour] = int(round(pred_float))
+
+            for day in range(0, 7):
+                data_frame[0][2] = day
+                x = pd.DataFrame(data_frame, columns=["number", "month", "day", "hour", "temp", "weather_desc", "wind_speed", "wind_deg"])
+                prediction = model.predict(x)
+                pred_float = prediction.item()
+                pred_bikes["pred_avail_daily"][day] = int(round(pred_float))
+
             return jsonify(pred_bikes)
-
-
-
 
 # start the scheduler
 scheduler.start()
-    
 
 if __name__ == "__main__":
     app.run(debug=True)
