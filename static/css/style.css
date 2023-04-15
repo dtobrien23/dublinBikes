@@ -220,14 +220,22 @@ button {
 #chartContainer {
     display: none;
     background-color: white;
-}
-
-#myChart {
-    display: none;
-    height: 100vh;
     width: 100%;
 }
 
+#charts {
+    display:flex;
+    justify-content: space-around;
+}
+
+#pred_hourly {
+
+}
+
+#pred_hourly {
+
+}
+
 #closeCharts{
-    display: none;
+
 }

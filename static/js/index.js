@@ -652,18 +652,13 @@ function displayForecast(){
   const chartContainer = document.getElementById("chartContainer");
   chartContainer.style.display = "block";
   const closeCharts = document.getElementById("closeCharts");
-  closeCharts.style.display = "block"
   const hourly = document.getElementById("pred_hourly");
-  hourly.style.display = "block";
   const daily = document.getElementById("pred_daily");
-  daily.style.display = "block";
 
   closeCharts.addEventListener("click", () => {
     mapDisplay.style.display = "block";
     chartContainer.style.display = "none";
     closeCharts.style.display = "none"
-    hourly.style.display = "none";
-    daily.style.display = "none";
   });
 
   displayCharts(hourly, daily)
@@ -675,72 +670,54 @@ function displayCharts(hourly, daily) {
     dailyChart.destroy();
   }
 
-  const progress = document.getElementById('animationProgress');
+  fetch("/predicted_availability")
+    .then((response) => response.json())
+    .then((predictions) => {
+      let pred_hourly = Object.values(predictions["pred_avail_hourly"]);
+      pred_hourly.splice(2, 4);
+      pred_hourly.push(pred_hourly.shift());
 
-    fetch("/predicted_availability")
-      .then((response) => response.json())
-      .then((predictions) => {
-        let pred_hourly = Object.values(predictions["pred_avail_hourly"]);
-        pred_hourly.splice(2, 4);
-        pred_hourly.push(pred_hourly.shift());
+      let pred_daily = Object.values(predictions["pred_avail_daily"]);
 
-        let pred_daily = Object.values(predictions["pred_avail_daily"]);
-
-      hourlyChart = new Chart(hourly, {
-          type: 'bar',
-          data: {
-            labels: ['5am', '6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm',
-              '7pm', '8pm', '9pm', '10pm', '11pm', '12am'],
-            datasets: [{
-              data: pred_hourly,
-              borderWidth: 1
-            }]
-          },
-          options: {
-            scales: {
-              y: {
-                beginAtZero: true
-              }
-            },
-            animation: {
-              duration: 2000,
-              onProgress: function (animation) {
-                progress.value = animation.currentStep / animation.numSteps;
-              },
-              onComplete: function (animation) {
-                  progress.value = animation.currentStep;
-              }
+    hourlyChart = new Chart(hourly, {
+        type: 'bar',
+        data: {
+          labels: ['5am', '6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm',
+            '7pm', '8pm', '9pm', '10pm', '11pm', '12am'],
+          datasets: [{
+            data: pred_hourly,
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
             }
-          }
-        });
-
-      dailyChart = new Chart(daily, {
-          type: 'bar',
-          data: {
-            labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-            datasets: [{
-              data: pred_daily,
-              borderWidth: 1
-            }]
           },
-          options: {
-            scales: {
-              y: {
-                beginAtZero: true
-              }
-            },
-            animation: {
-              duration: 2000,
-              onProgress: function (animation) {
-                progress.value = animation.currentStep / animation.numSteps;
-              },
-              onComplete: function (animation) {
-                  progress.value = animation.currentStep;
-              }
+          maintainAspectRatio: true
+        }
+      });
+
+    dailyChart = new Chart(daily, {
+        type: 'bar',
+        data: {
+          labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+          datasets: [{
+            data: pred_daily,
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
             }
-          }
-        });
-        chartsDisplayed = true;
+          },
+          maintainAspectRatio: true
+        }
+      });
+      chartsDisplayed = true;
   });
 }
 
