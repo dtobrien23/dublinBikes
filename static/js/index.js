@@ -675,6 +675,8 @@ function displayCharts(hourly, daily) {
     dailyChart.destroy();
   }
 
+  const progress = document.getElementById('animationProgress');
+
     fetch("/predicted_availability")
       .then((response) => response.json())
       .then((predictions) => {
@@ -699,6 +701,15 @@ function displayCharts(hourly, daily) {
               y: {
                 beginAtZero: true
               }
+            },
+            animation: {
+              duration: 2000,
+              onProgress: function (animation) {
+                progress.value = animation.currentStep / animation.numSteps;
+              },
+              onComplete: function (animation) {
+                  progress.value = animation.currentStep;
+              }
             }
           }
         });
@@ -716,6 +727,15 @@ function displayCharts(hourly, daily) {
             scales: {
               y: {
                 beginAtZero: true
+              }
+            },
+            animation: {
+              duration: 2000,
+              onProgress: function (animation) {
+                progress.value = animation.currentStep / animation.numSteps;
+              },
+              onComplete: function (animation) {
+                  progress.value = animation.currentStep;
               }
             }
           }
