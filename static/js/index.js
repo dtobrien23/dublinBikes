@@ -7,9 +7,11 @@ let greenStation;
 let orangeStation;
 let redStation;
 let userHasBikeFlag = true;
+let chartsDisplayed = false;
+let hourlyChart;
+let dailyChart;
 let latestAvailability = [];  // used to store current availability info in a global object
 let markers = {}  // to store each map marker object
-
 
 function addMarkers(stations, availability) {
 
@@ -631,6 +633,7 @@ function startPrediction(event) {
   })
     .then(response => {
       if (response.ok) {
+        displayForecast();
         return response.text();
       }
       throw new Error("Network response was not okay");
@@ -641,6 +644,84 @@ function startPrediction(event) {
     .catch(error => {
       console.error("Error submitting form", error);
     });
+}
+
+function displayForecast(){
+  const mapDisplay = document.getElementById("map")
+  mapDisplay.style.display = "none";
+  const chartContainer = document.getElementById("chartContainer");
+  chartContainer.style.display = "block";
+  const closeCharts = document.getElementById("closeCharts");
+  closeCharts.style.display = "block"
+  const hourly = document.getElementById("pred_hourly");
+  hourly.style.display = "block";
+  const daily = document.getElementById("pred_daily");
+  daily.style.display = "block";
+
+  closeCharts.addEventListener("click", () => {
+    mapDisplay.style.display = "block";
+    chartContainer.style.display = "none";
+    closeCharts.style.display = "none"
+    hourly.style.display = "none";
+    daily.style.display = "none";
+  });
+
+  displayCharts(hourly, daily)
+}
+
+function displayCharts(hourly, daily) {
+  if (chartsDisplayed) {
+    hourlyChart.destroy();
+    dailyChart.destroy();
+  }
+
+    fetch("/predicted_availability")
+      .then((response) => response.json())
+      .then((predictions) => {
+        let pred_hourly = Object.values(predictions["pred_avail_hourly"]);
+        pred_hourly.splice(2, 4);
+        pred_hourly.push(pred_hourly.shift());
+
+        let pred_daily = Object.values(predictions["pred_avail_daily"]);
+
+      hourlyChart = new Chart(hourly, {
+          type: 'bar',
+          data: {
+            labels: ['5am', '6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm',
+              '7pm', '8pm', '9pm', '10pm', '11pm', '12am'],
+            datasets: [{
+              data: pred_hourly,
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+
+      dailyChart = new Chart(daily, {
+          type: 'bar',
+          data: {
+            labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+            datasets: [{
+              data: pred_daily,
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+        chartsDisplayed = true;
+  });
 }
 
 window.initMap = initMap;
