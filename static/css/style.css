@@ -223,10 +223,15 @@ button {
 
 #chartContainer {
     display: none;
+    background-color: white;
 }
 
 #myChart {
     display: none;
     height: 100vh;
     width: 100%;
+}
+
+#closeCharts{
+    display: none;
 }
