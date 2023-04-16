@@ -24,7 +24,7 @@ body, html {
 }
 
 .inputs {
-    width: 460px;
+    min-width: 340px;
     padding: 0 0 30px 0;
     text-align: left;
 }
@@ -50,6 +50,10 @@ button {
     padding: 8px 8px 8px 8px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     cursor: pointer;
+}
+
+#map button {
+    box-shadow: 0 0 0 0;
 }
 
 #user-selector {
@@ -219,43 +223,45 @@ button {
 
 #chartContainer {
     display: none;
-    background-color: white;
-    width: 100%;
-    color: black;
+    min-width: 350px;
+    background-color: white;;
+    color: #094e78;
     text-align: left;
+    padding: 8px 8px 8px 8px;
+}
+
+#chartContainer h1 {
+    margin: 5px;
+}
+
+#chartContainer p {
+    margin: 5px;
 }
 
 #charts {
     display: flex;
-    justify-content: space-around;
-    width: 100%;
-}
-
-#hourly_chart {
-    position: relative;
-    height: 235px;
-    width: 470px;
-}
-
-#daily_chart {
-    position: relative;
-    height: 235px;
-    width: 470px;
-}
-
-#pred_daily {
-    width: 100%;
-    height: 100%;
+    flex-direction: column;
+    align-content: center;
+    flex-wrap: wrap;
+    padding: 8px 8px 8px 8px;
 }
 
 #pred_hourly {
-    width: 100%;
-    height: 100%;
+    margin: 20px;
+}
+
+#pred_daily {
+    margin: 20px;
+}
+
+#station_info {
+    padding: 5px;
 }
 
 #headInfo {
     display: flex;
     justify-content: space-between;
+    align-content: center;
 }
 
 #closeCharts{
