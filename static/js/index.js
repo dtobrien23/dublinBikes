@@ -9,6 +9,8 @@ let redStation;
 let userHasBikeFlag = true;
 let latestAvailability = [];  // used to store current availability info in a global object
 let markers = {}  // to store each map marker object
+let station_locations = ""
+let stationInputs = [];
 
 
 function addMarkers(stations, availability) {
@@ -593,22 +595,22 @@ function forecastPlanner(){
   forecast.style.backgroundColor = "#d3d3d3";
   forecast.style.color = "black";
 
-
   //populates station location dropdown
   fetch("/stations")
     .then((response) => response.json())
     .then((stations_list) => {
-      let station_locations = ""
       stations_list.forEach(station => {
         let address = station.address.replace("'", "&#39;"); // html would not read " ' " chars in station name
         station_locations += "<option value ='" + address + "'>";
+        stationInputs.push(address);
       });
       document.getElementById('stations_list').innerHTML = station_locations;
     });
-}
+  }
+
 
 //removes forecast options and displays journey planner options
-function journeyPlanner(){
+function journeyPlanner() {
   document.getElementById("journey_planner").style.display = "block";
   document.getElementById("forecast_planner").style.display = "none";
   const journey = document.getElementById("journey");
@@ -620,10 +622,43 @@ function journeyPlanner(){
   forecast.style.color = "white";
 }
 
+
+function edgeCases() {
+  var selectedStation = document.getElementById("stations").value;
+
+  for (var i = 0; i < stationInputs.length; i++) {
+    var thisStation = stationInputs[i];
+    if (selectedStation.includes(thisStation)) {
+      break;
+    } else if (i == stationInputs.length - 1 && !selectedStation.includes(thisStation)) {
+      alert("Error! You must select a valid station (ensure you are clicking on your station of choice from the dropdown).")
+    };
+  };
+
+  // Get the current date 
+  var now = new Date();
+  var tomorrow = new Date(now.getTime() + 86400000);
+  tomorrow.setHours(0, 0, 0, 0); // Set time values to zero
+
+  var maxDate = new Date(tomorrow.getTime() + 7 * 24 * 60 * 60 * 1000);
+  maxDate.setHours(0, 0, 0, 0); // Set time values to zero
+
+  var selectedDate = new Date(document.getElementById("forecast_date").value);
+  selectedDate.setHours(0, 0, 0, 0); // Set time values to zero
+
+  if (selectedDate < tomorrow || selectedDate > maxDate) {
+    alert("Error! You must select a date between tomorrow and the next 7 days.");    
+  }
+};
+
+
 //gets inputs from forecast form
 function startPrediction(event) {
   event.preventDefault();
   const form = document.getElementById("forecast_planner");
+
+  form.addEventListener("submit", edgeCases());
+
   const data = new FormData(form);
   fetch("/forecast_form", {
     method: "POST",
