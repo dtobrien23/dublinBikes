@@ -654,17 +654,17 @@ function displayForecast(){
   const closeCharts = document.getElementById("closeCharts");
   const hourly = document.getElementById("pred_hourly");
   const daily = document.getElementById("pred_daily");
+  const station_info = document.getElementById("station_info")
 
   closeCharts.addEventListener("click", () => {
     mapDisplay.style.display = "block";
     chartContainer.style.display = "none";
-    closeCharts.style.display = "none"
   });
 
-  displayCharts(hourly, daily)
+  displayCharts(hourly, daily, station_info)
 }
 
-function displayCharts(hourly, daily) {
+function displayCharts(hourly, daily, station_info) {
   if (chartsDisplayed) {
     hourlyChart.destroy();
     dailyChart.destroy();
@@ -679,11 +679,20 @@ function displayCharts(hourly, daily) {
 
       let pred_daily = Object.values(predictions["pred_avail_daily"]);
 
+      let timeLabels = ['5am', '6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm',
+            '7pm', '8pm', '9pm', '10pm', '11pm', '12am']
+      let dayLabels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
+      station_info.innerHTML = "<h1>" + predictions["station_name"]
+          + "</h1><p>Day: " + dayLabels[parseInt(predictions["user_day"]["day"])]
+          + "</p><p>Time: " + predictions["user_hour"]["time_str"]
+          +"</p><p>Available Bikes: " + predictions["pred_avail_hourly"][predictions["user_hour"]["hour"]] + "</p>";
+
+
     hourlyChart = new Chart(hourly, {
         type: 'bar',
         data: {
-          labels: ['5am', '6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm',
-            '7pm', '8pm', '9pm', '10pm', '11pm', '12am'],
+          labels: timeLabels,
           datasets: [{
             data: pred_hourly,
             borderWidth: 1
@@ -695,14 +704,15 @@ function displayCharts(hourly, daily) {
               beginAtZero: true
             }
           },
-          maintainAspectRatio: true
+          responsive: false,
+          maintainAspectRatio: false
         }
       });
 
     dailyChart = new Chart(daily, {
         type: 'bar',
         data: {
-          labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+          labels: dayLabels,
           datasets: [{
             data: pred_daily,
             borderWidth: 1
@@ -714,7 +724,8 @@ function displayCharts(hourly, daily) {
               beginAtZero: true
             }
           },
-          maintainAspectRatio: true
+          responsive: false,
+          maintainAspectRatio: false
         }
       });
       chartsDisplayed = true;
