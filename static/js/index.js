@@ -636,18 +636,15 @@ function edgeCases() {
   };
 
   // Get the current date 
-  var now = new Date();
-  var tomorrow = new Date(now.getTime() + 86400000);
-  tomorrow.setHours(0, 0, 0, 0); // Set time values to zero
-
-  var maxDate = new Date(tomorrow.getTime() + 7 * 24 * 60 * 60 * 1000);
-  maxDate.setHours(0, 0, 0, 0); // Set time values to zero
-
+  var today = new Date();
+  var maxDate = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
   var selectedDate = new Date(document.getElementById("forecast_date").value);
+  
+  today.setHours(0, 0, 0, 0); // Set time values to zero
   selectedDate.setHours(0, 0, 0, 0); // Set time values to zero
 
-  if (selectedDate < tomorrow || selectedDate > maxDate) {
-    alert("Error! You must select a date between tomorrow and the next 7 days.");    
+  if (selectedDate < today || selectedDate > maxDate) {
+    alert("Error! You must select a date between now and the next 7 days.");    
   }
 };
 

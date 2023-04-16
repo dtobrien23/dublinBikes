@@ -76,7 +76,7 @@
             <label for="stations">Stations</label><input type=text id="stations" name="stations" placeholder="Enter Station"
                                                          list="stations_list">
             <datalist id="stations_list"></datalist>
-            <label for="forecast_date">Date</label><input type=date id="forecast_date" name="forecast_date" min="{{ tomorrow }}" max="{{ max_date }}">
+            <label for="forecast_date">Date</label><input type=date id="forecast_date" name="forecast_date" min="{{ today }}" max="{{ max_date }}">
             <label for="forecast_time">Time</label><input type=time id="forecast_time" name="forecast_time">
             <div id="forecast-start">
                 <button type="submit" id="start_prediction">Start!</button>
