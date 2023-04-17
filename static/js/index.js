@@ -679,6 +679,7 @@ function startPrediction(event) {
     });
 }
 
+//shows the sidebar with forecast info and makes the map move to one side
 function displayForecast(){
   const mapDisplay = document.getElementById("map")
   mapDisplay.style.display = "flex";
@@ -697,6 +698,7 @@ function displayForecast(){
   displayCharts(hourly, daily, station_info)
 }
 
+//creates the charts on the sidebar, the charts have to be destroyed before new ones can be made at the same id
 function displayCharts(hourly, daily, station_info) {
   if (chartsDisplayed) {
     hourlyChart.destroy();
