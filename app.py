@@ -154,7 +154,7 @@ def predict_availability():
 
     data_frame = [x_vars]
 
-    pred_bikes = {"station_name": station_name, "user_day": {"date_str": date_str, "day": day_of_week}, "user_hour": {"time_str": time_str, "hour": hour},  "pred_avail_hourly": {}, "pred_avail_daily": {}}
+    pred_bikes = {"station_name": station_name, "user_day": {"date_str": date_str, "day": day_of_week}, "user_hour": {"time_str": time_str, "hour": str(int(hour))},  "pred_avail_hourly": {}, "pred_avail_daily": {}}
     for model_name, model in models.items():
         if model_name == station_num:
             for hour in range(0, 24):
