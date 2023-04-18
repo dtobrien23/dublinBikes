@@ -7,11 +7,13 @@ let greenStation;
 let orangeStation;
 let redStation;
 let userHasBikeFlag = true;
+let chartsDisplayed = false;
+let hourlyChart;
+let dailyChart;
 let latestAvailability = [];  // used to store current availability info in a global object
 let markers = {}  // to store each map marker object
 let station_locations = ""
 let stationInputs = [];
-
 
 function addMarkers(stations, availability) {
 
@@ -180,6 +182,7 @@ function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 53.346077, lng: -6.269475 },
     zoom: 14,
+    streetViewControl: false
   });
   const bikeLayer = new google.maps.BicyclingLayer();
 
@@ -627,14 +630,20 @@ function edgeCases() {
   let selectedStation = document.getElementById("stations").value;
   selectedStation = selectedStation.replace("'", "&#39;")  // for stations with " ' " to be recognised
 
+  let userCorrectStation;
+  let userCorrectDate;
+  let userCorrectTime;
+
   for (var i = 0; i < stationInputs.length; i++) {
     var thisStation = stationInputs[i];
     if (selectedStation.includes(thisStation)) {
+      userCorrectStation = true;
       break;
     } else if (i == stationInputs.length - 1 && !selectedStation.includes(thisStation)) {
       alert("Error! You must select a valid station (ensure you are clicking on your station of choice from the dropdown).")
-    };
-  };
+      userCorrectStation = false;
+    }
+  }
 
   // Get the current date 
   var today = new Date();
@@ -647,12 +656,18 @@ function edgeCases() {
 
   if (sDateDate < today || sDateDate > maxDate) {
     alert("Error! You must select a date between now and the next 7 days.");    
-  }
+    userCorrectDate = false;
+  } else {
+    userCorrectDate = true;
+  };
 
   // check that user enters a date
   if (selectedDate == "") {
     alert("Error! You must input a date.")
-  }
+    userCorrectDate = false;
+  } else {
+    userCorrectDate = true;
+  };
 
   // limit time inputs
   var selectedTime = document.getElementById("forecast_time").value;
@@ -662,16 +677,26 @@ function edgeCases() {
 
   if (sTimeHour > 0 && sTimeHour < 5) {
     alert("Error! Bike stations do not open until 5 a.m.")
+    userCorrectDate = false;
   } else if (sTimeHour == 0 && sTimeMinutes > 30) {
-    alert("Error! Bike stations close at 12:30 a.m.")
+    alert("Error! Bike stations close at 12:30 a.m.");
+    userCorrectTime = false;
+  } else {
+    userCorrectTime = true;
   };
 
   // check that user enters a time
   if (selectedTime == "") {
     alert("Error! You must input a time.")
-  }
+    userCorrectTime = false;
+  } else {
+    userCorrectTime = true;
+  };
 
-};
+  if (userCorrectStation == true && userCorrectDate == true && userCorrectTime == true){
+    displayForecast();
+  }
+}
 
 
 //gets inputs from forecast form
@@ -698,6 +723,117 @@ function startPrediction(event) {
     .catch(error => {
       console.error("Error submitting form", error);
     });
+}
+
+//shows the sidebar with forecast info and makes the map move to one side
+function displayForecast(){
+  const mapDisplay = document.getElementById("map")
+  mapDisplay.style.display = "flex";
+  const chartContainer = document.getElementById("chartContainer");
+  chartContainer.style.display = "block";
+  const closeCharts = document.getElementById("closeCharts");
+  const hourly = document.getElementById("pred_hourly");
+  const daily = document.getElementById("pred_daily");
+  const station_info = document.getElementById("station_info")
+
+  closeCharts.addEventListener("click", () => {
+    mapDisplay.style.display = "block";
+    chartContainer.style.display = "none";
+  });
+
+  displayCharts(hourly, daily, station_info)
+
+}
+
+//creates the charts on the sidebar, the charts have to be destroyed before new ones can be made at the same id
+function displayCharts(hourly, daily, station_info) {
+  if (chartsDisplayed) {
+    hourlyChart.destroy();
+    dailyChart.destroy();
+  }
+
+  fetch("/predicted_availability")
+    .then((response) => response.json())
+    .then((predictions) => {
+      let pred_hourly = Object.values(predictions["pred_avail_hourly"]);
+      pred_hourly.splice(2, 4);
+      pred_hourly.push(pred_hourly.shift());
+
+      let pred_daily = Object.values(predictions["pred_avail_daily"]);
+
+      let timeLabels = ['5am', '6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm',
+            '7pm', '8pm', '9pm', '10pm', '11pm', '12am']
+      let dayLabels = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
+      station_info.innerHTML = "<h1>" + predictions["station_name"]
+          + "</h1><p>Day: " + dayLabels[parseInt(predictions["user_day"]["day"])]
+          + "</p><p>Time: " + predictions["user_hour"]["time_str"]
+          +"</p><p>Available Bikes: " + predictions["pred_avail_hourly"][predictions["user_hour"]["hour"]] + "</p>";
+
+
+    hourlyChart = new Chart(hourly, {
+        type: 'bar',
+        data: {
+          labels: timeLabels,
+          datasets: [{
+            label: 'Hourly Available Bikes',
+            data: pred_hourly,
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: '# Bikes'
+              }
+            },
+            x: {
+              title: {
+                display: true,
+                text: 'Hours'
+              }
+            }
+          },
+          responsive: false,
+          maintainAspectRatio: false
+        }
+      });
+
+    dailyChart = new Chart(daily, {
+        type: 'bar',
+        data: {
+          labels: dayLabels,
+          datasets: [{
+            label: 'Daily Available Bikes',
+            data: pred_daily,
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: '# Bikes'
+              }
+            },
+            x: {
+              title: {
+                display: true,
+                text: 'Days'
+              }
+            }
+          },
+          responsive: false,
+          maintainAspectRatio: false
+        }
+      });
+      chartsDisplayed = true;
+  });
 }
 
 window.initMap = initMap;
