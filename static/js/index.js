@@ -627,9 +627,12 @@ function journeyPlanner() {
 
 
 function edgeCases() {
+  let selectedStation = document.getElementById("stations").value;
+  selectedStation = selectedStation.replace("'", "&#39;")  // for stations with " ' " to be recognised
+
   let userCorrectStation;
   let userCorrectDate;
-  var selectedStation = document.getElementById("stations").value;
+  let userCorrectTime;
 
   for (var i = 0; i < stationInputs.length; i++) {
     var thisStation = stationInputs[i];
@@ -645,19 +648,52 @@ function edgeCases() {
   // Get the current date 
   var today = new Date();
   var maxDate = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-  var selectedDate = new Date(document.getElementById("forecast_date").value);
+  var selectedDate = document.getElementById("forecast_date").value;
+  var sDateDate = new Date(selectedDate)
   
   today.setHours(0, 0, 0, 0); // Set time values to zero
-  selectedDate.setHours(0, 0, 0, 0); // Set time values to zero
+  sDateDate.setHours(0, 0, 0, 0); // Set time values to zero
 
-  if (selectedDate < today || selectedDate > maxDate) {
-    alert("Error! You must select a date between now and the next 7 days.");
+  if (sDateDate < today || sDateDate > maxDate) {
+    alert("Error! You must select a date between now and the next 7 days.");    
     userCorrectDate = false;
   } else {
     userCorrectDate = true;
-  }
+  };
 
-  if (userCorrectStation == true && userCorrectDate == true){
+  // check that user enters a date
+  if (selectedDate == "") {
+    alert("Error! You must input a date.")
+    userCorrectDate = false;
+  } else {
+    userCorrectDate = true;
+  };
+
+  // limit time inputs
+  var selectedTime = document.getElementById("forecast_time").value;
+  var sTimeDateObject = new Date(`1970-01-01T${selectedTime}:00`);
+  var sTimeHour = sTimeDateObject.getHours();
+  var sTimeMinutes = sTimeDateObject.getMinutes();
+
+  if (sTimeHour > 0 && sTimeHour < 5) {
+    alert("Error! Bike stations do not open until 5 a.m.")
+    userCorrectDate = false;
+  } else if (sTimeHour == 0 && sTimeMinutes > 30) {
+    alert("Error! Bike stations close at 12:30 a.m.");
+    userCorrectTime = false;
+  } else {
+    userCorrectTime = true;
+  };
+
+  // check that user enters a time
+  if (selectedTime == "") {
+    alert("Error! You must input a time.")
+    userCorrectTime = false;
+  } else {
+    userCorrectTime = true;
+  };
+
+  if (userCorrectStation == true && userCorrectDate == true && userCorrectTime == true){
     displayForecast();
   }
 }
