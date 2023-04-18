@@ -627,16 +627,20 @@ function journeyPlanner() {
 
 
 function edgeCases() {
+  let userCorrectStation;
+  let userCorrectDate;
   var selectedStation = document.getElementById("stations").value;
 
   for (var i = 0; i < stationInputs.length; i++) {
     var thisStation = stationInputs[i];
     if (selectedStation.includes(thisStation)) {
+      userCorrectStation = true;
       break;
     } else if (i == stationInputs.length - 1 && !selectedStation.includes(thisStation)) {
       alert("Error! You must select a valid station (ensure you are clicking on your station of choice from the dropdown).")
-    };
-  };
+      userCorrectStation = false;
+    }
+  }
 
   // Get the current date 
   var today = new Date();
@@ -647,9 +651,16 @@ function edgeCases() {
   selectedDate.setHours(0, 0, 0, 0); // Set time values to zero
 
   if (selectedDate < today || selectedDate > maxDate) {
-    alert("Error! You must select a date between now and the next 7 days.");    
+    alert("Error! You must select a date between now and the next 7 days.");
+    userCorrectDate = false;
+  } else {
+    userCorrectDate = true;
   }
-};
+
+  if (userCorrectStation == true && userCorrectDate == true){
+    displayForecast();
+  }
+}
 
 
 //gets inputs from forecast form
@@ -666,7 +677,6 @@ function startPrediction(event) {
   })
     .then(response => {
       if (response.ok) {
-        displayForecast();
         return response.text();
       }
       throw new Error("Network response was not okay");
@@ -696,6 +706,7 @@ function displayForecast(){
   });
 
   displayCharts(hourly, daily, station_info)
+
 }
 
 //creates the charts on the sidebar, the charts have to be destroyed before new ones can be made at the same id
