@@ -640,7 +640,7 @@ function edgeCases() {
       userCorrectStation = true;
       break;
     } else if (i == stationInputs.length - 1 && !selectedStation.includes(thisStation)) {
-      alert("Error! You must select a valid station (ensure you are clicking on your station of choice from the dropdown).")
+      alert("Error! You must select a valid station.")
       userCorrectStation = false;
     }
   }
@@ -663,7 +663,7 @@ function edgeCases() {
 
   // check that user enters a date
   if (selectedDate == "") {
-    alert("Error! You must input a date.")
+    alert("Error! You must enter a date.")
     userCorrectDate = false;
   } else {
     userCorrectDate = true;
@@ -687,7 +687,7 @@ function edgeCases() {
 
   // check that user enters a time
   if (selectedTime == "") {
-    alert("Error! You must input a time.")
+    alert("Error! You must enter a time.")
     userCorrectTime = false;
   } else {
     userCorrectTime = true;
