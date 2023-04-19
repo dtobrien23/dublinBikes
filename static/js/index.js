@@ -356,6 +356,9 @@ class AutocompleteDirectionsHandler {
     });
 
     document.getElementById("current_location").addEventListener("click", () => {
+      const loadingLocationCircle = document.getElementById("loading-location-circle");
+      loadingLocationCircle.style.display = "block";
+
       // Try HTML5 geolocation.
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -376,6 +379,7 @@ class AutocompleteDirectionsHandler {
                 alert('Geocode was not successful for the following reason: ' + status);
             }
           });
+          loadingLocationCircle.style.display = "none";
           },
         () => {
           handleLocationError(true, currentLocationWindow, map.getCenter());
@@ -734,19 +738,21 @@ function displayForecast(){
   const closeCharts = document.getElementById("closeCharts");
   const hourly = document.getElementById("pred_hourly");
   const daily = document.getElementById("pred_daily");
-  const station_info = document.getElementById("station_info")
+  const station_info = document.getElementById("station_info");
+  const loadingChartCircle = document.getElementById("loading-chart-circle");
+  loadingChartCircle.style.display = "block";
 
   closeCharts.addEventListener("click", () => {
     mapDisplay.style.display = "block";
     chartContainer.style.display = "none";
   });
 
-  displayCharts(hourly, daily, station_info)
+  displayCharts(hourly, daily, station_info, chartContainer, loadingChartCircle)
 
 }
 
 //creates the charts on the sidebar, the charts have to be destroyed before new ones can be made at the same id
-function displayCharts(hourly, daily, station_info) {
+function displayCharts(hourly, daily, station_info, chartContainer, loadingCircle) {
   if (chartsDisplayed) {
     hourlyChart.destroy();
     dailyChart.destroy();
@@ -833,6 +839,8 @@ function displayCharts(hourly, daily, station_info) {
         }
       });
       chartsDisplayed = true;
+      loadingCircle.style.display = "none";
+      chartContainer.style.display = "block";
   });
 }
 

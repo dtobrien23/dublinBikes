@@ -10,7 +10,7 @@
 <div class="app">
 
     <div class="inputs">
-        <h1 style="margin-left: 15px;">Dublin Bikes <img src="/static/images/bike.png" alt="bike"/></h1>
+        <h1 style="margin-left: 15px;">Dublin Bike <img src="/static/images/bike.png" alt="bike"/></h1>
 
         <section id="current-weather">
             <section class="current-weather-info">
@@ -48,10 +48,13 @@
                 <button type="button" id="getBike">Get Bike</button>
                 <button type="button" id="returnBike">Return Bike</button>
             </div>
-            <div class="location-label">
-                <label for="origin">Current Location</label><input type=text id="origin"
-                                                                   placeholder="Enter Current Location">
-                <button type="button" id="current_location">CL</button>
+
+                <div class="location-label">
+                    <label for="origin">Current Location</label>
+                </div>
+            <div class="location_section">
+                <input type=text id="origin" placeholder="Enter Current Location">
+                <button type="button" id="current_location">&#8982</button>
             </div>
             <div id="location-start">
                 <button type="button" id="start_route">Start!</button>
@@ -90,6 +93,7 @@
             <div id="station_info"></div>
             <button type="button" id="closeCharts">Close</button>
         </div>
+        <div id="loading-chart-circle"></div>
         <div id="charts">
             <div id="hourly_chart">
                 <canvas id="pred_hourly"></canvas>
@@ -103,7 +107,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <div id="map-container">
+    <div id="loading-location-circle"></div>
     <div id="map"></div>
+        </div>
 
     <script
             src="https://maps.googleapis.com/maps/api/js?key={{ gmkey }}&libraries=places&callback=initMap&v=weekly"
