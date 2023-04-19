@@ -2,28 +2,28 @@ name: dublinBikes
 channels:
   - defaults
 dependencies:
-  - brotlipy=0.7.0=py310hca72f7f_1002
-  - bzip2=1.0.8=h1de35cc_0
-  - ca-certificates=2023.01.10=hecd8cb5_0
-  - certifi=2022.12.7=py310hecd8cb5_0
-  - cffi=1.15.1=py310h6c40b1e_3
-  - cryptography=38.0.4=py310hf6deb26_0
-  - idna=3.4=py310hecd8cb5_0
-  - libffi=3.4.2=hecd8cb5_6
-  - ncurses=6.4=hcec6c5f_0
-  - openssl=1.1.1t=hca72f7f_0
-  - pip=22.3.1=py310hecd8cb5_0
-  - pycparser=2.21=pyhd3eb1b0_0
-  - pyopenssl=22.0.0=pyhd3eb1b0_0
-  - pysocks=1.7.1=py310hecd8cb5_0
-  - python=3.10.9=h218abb5_0
-  - readline=8.2=hca72f7f_0
-  - setuptools=65.6.3=py310hecd8cb5_0
-  - sqlite=3.40.1=h880c91c_0
-  - tk=8.6.12=h5d9f67b_0
-  - urllib3=1.26.14=py310hecd8cb5_0
-  - xz=5.2.10=h6c40b1e_1
-  - zlib=1.2.13=h4dc903c_0
+  - brotlipy=0.7.0
+  - bzip2=1.0.8
+  - ca-certificates=2023.01.10
+  - certifi=2022.12.7
+  - cffi=1.15.1
+  - cryptography=38.0.4
+  - idna=3.4
+  - libffi=3.4.2
+  - ncurses=6.4
+  - openssl=1.1.1t
+  - pip=22.3.1
+  - pycparser=2.21
+  - pyopenssl=22.0.0
+  - pysocks=1.7.1
+  - python=3.10.9
+  - readline=8.2
+  - setuptools=65.6.3
+  - sqlite=3.40.1
+  - tk=8.6.12
+  - urllib3=1.26.14
+  - xz=5.2.10
+  - zlib=1.2.13
   - pip:
       - anyio==3.6.2
       - appnope==0.1.3
