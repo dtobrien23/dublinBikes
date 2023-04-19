@@ -736,9 +736,12 @@ function displayForecast(){
   const chartContainer = document.getElementById("chartContainer");
   chartContainer.style.display = "block";
   const closeCharts = document.getElementById("closeCharts");
+  const headInfo = document.getElementById("headInfo");
+  headInfo.style.justifyContent = "flex-end";
   const hourly = document.getElementById("pred_hourly");
   const daily = document.getElementById("pred_daily");
   const station_info = document.getElementById("station_info");
+  station_info.style.display = "none";
   const loadingChartCircle = document.getElementById("loading-chart-circle");
   loadingChartCircle.style.display = "block";
 
@@ -747,12 +750,12 @@ function displayForecast(){
     chartContainer.style.display = "none";
   });
 
-  displayCharts(hourly, daily, station_info, chartContainer, loadingChartCircle)
+  displayCharts(hourly, daily, station_info, chartContainer, loadingChartCircle, headInfo)
 
 }
 
 //creates the charts on the sidebar, the charts have to be destroyed before new ones can be made at the same id
-function displayCharts(hourly, daily, station_info, chartContainer, loadingCircle) {
+function displayCharts(hourly, daily, station_info, chartContainer, loadingCircle, headInfo) {
   if (chartsDisplayed) {
     hourlyChart.destroy();
     dailyChart.destroy();
@@ -839,7 +842,9 @@ function displayCharts(hourly, daily, station_info, chartContainer, loadingCircl
         }
       });
       chartsDisplayed = true;
+      station_info.style.display = "block";
       loadingCircle.style.display = "none";
+      headInfo.style.justifyContent = "space-between";
       chartContainer.style.display = "block";
   });
 }
