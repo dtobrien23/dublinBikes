@@ -233,7 +233,7 @@ button {
 
 #chartContainer {
     display: none;
-    min-width: 350px;
+    min-width: 380px;
     background-color: white;;
     color: #094e78;
     text-align: left;
@@ -258,10 +258,12 @@ button {
 
 #pred_hourly {
     margin: 20px;
+    width: 350px;
 }
 
 #pred_daily {
     margin: 20px;
+    width: 350px;
 }
 
 #station_info {

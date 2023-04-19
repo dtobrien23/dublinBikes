@@ -394,6 +394,7 @@ class AutocompleteDirectionsHandler {
   }
 
   setupPlaceChangedListener(autocomplete) {
+    const loadingLocationCircle = document.getElementById("loading-location-circle");
     //dropdown menu will prioritise places in view
     autocomplete.bindTo("bounds", this.map);
     // Ref: https://developers.google.com/maps/documentation/javascript/examples/place-search
@@ -411,6 +412,7 @@ class AutocompleteDirectionsHandler {
       let service = new google.maps.places.PlacesService(this.map);
       service.findPlaceFromQuery(request, (results, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK  && results) {
+          loadingLocationCircle.style.display = "block";
           this.originLatLng = results[0].geometry.location;
 
           //finds the nearest station that has bikes available to the origin address
@@ -507,7 +509,7 @@ class AutocompleteDirectionsHandler {
               // waits until all promises are resolved then this.route() is called
               Promise.all(promises)
                 .then(() => {
-                  this.route();
+                  this.route(loadingLocationCircle);
                 })
                 .catch((error) => {
                   console.error(error);
@@ -517,7 +519,7 @@ class AutocompleteDirectionsHandler {
         }
       });
   }
-  route() {
+  route(loadingLocationCircle) {
     if (!this.originLatLng || !this.destinationLatLng) {
       return;
     }
@@ -542,6 +544,7 @@ class AutocompleteDirectionsHandler {
         } else {
           window.alert("Directions request failed due to " + status);
         }
+        loadingLocationCircle.style.display = "none";
       }
     );
 
@@ -759,6 +762,8 @@ function displayCharts(hourly, daily, station_info, chartContainer, loadingCircl
   if (chartsDisplayed) {
     hourlyChart.destroy();
     dailyChart.destroy();
+    document.getElementById("pred_hourly").style.width = "350px";
+    document.getElementById("pred_daily").style.width = "350px";
   }
 
   fetch("/predicted_availability")
@@ -806,8 +811,8 @@ function displayCharts(hourly, daily, station_info, chartContainer, loadingCircl
               }
             }
           },
-          responsive: false,
-          maintainAspectRatio: false
+          responsive: true,
+          maintainAspectRatio: true
         }
       });
 
@@ -837,8 +842,8 @@ function displayCharts(hourly, daily, station_info, chartContainer, loadingCircl
               }
             }
           },
-          responsive: false,
-          maintainAspectRatio: false
+          responsive: true,
+          maintainAspectRatio: true
         }
       });
       chartsDisplayed = true;
