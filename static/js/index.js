@@ -382,9 +382,6 @@ class AutocompleteDirectionsHandler {
   // https://developers.google.com/maps/documentation/javascript/geolocation
   findCurrentLocation() {
     const geocoder = new google.maps.Geocoder();
-    currentLocationWindow = new google.maps.InfoWindow({
-      content: `<div style="color: black;"><p>Current Location</p></div>`,
-    });
 
     document.getElementById("current_location").addEventListener("click", () => {
       const loadingLocationCircle = document.getElementById("loading-location-circle");
@@ -406,7 +403,13 @@ class AutocompleteDirectionsHandler {
           geocoder.geocode( { location: pos}, function(results, status) {
             if (status == 'OK') {
               document.getElementById("origin").value = results[0].formatted_address;
+              currentLocationWindow = new google.maps.InfoWindow({
+                  content: `<div style="color: black;"><p>Current Location</p></div>`,
+              });
             } else {
+                currentLocationWindow = new google.maps.InfoWindow({
+                  content: `<div style="color: black;"><p>Current Location Could Not Be Found</p></div>`,
+              });
                 alert('Geocode was not successful for the following reason: ' + status);
             }
           });
@@ -414,6 +417,9 @@ class AutocompleteDirectionsHandler {
           },
         () => {
           loadingLocationCircle.style.display = "none";
+          currentLocationWindow = new google.maps.InfoWindow({
+                  content: `<div style="color: black;"><p>Current Location Could Not Be Found</p></div>`,
+              });
           handleLocationError(true, currentLocationWindow, map.getCenter());
         },
           {enableHighAccuracy: true}
@@ -421,6 +427,9 @@ class AutocompleteDirectionsHandler {
     } else {
       // Browser doesn't support Geolocation
       loadingLocationCircle.style.display = "none";
+      currentLocationWindow = new google.maps.InfoWindow({
+                  content: `<div style="color: black;"><p>Current Location Could Not Be Found</p></div>`,
+              });
       handleLocationError(false, currentLocationWindow, map.getCenter());
     }
     });
