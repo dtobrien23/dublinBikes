@@ -146,7 +146,7 @@ function getWeatherInformation() {
 
       // icon
       let icon = weatherData.current.weather[0].icon;
-      html = `<img src="http://openweathermap.org/img/w/${weatherData.current.weather[0].icon}.png" style="width: 100%; height: 120px;"></img>`
+      html = `<img src="https://openweathermap.org/img/w/${weatherData.current.weather[0].icon}.png" style="width: 100%; height: 120px;"></img>`
       document.getElementById("icon").innerHTML = html;
       
       // temperature
@@ -166,12 +166,11 @@ function getWeatherInformation() {
         let today = new Date(day.dt * 1000);
         let dayOfWeek = today.toLocaleString('en-IE', { weekday: 'long' });
 
-        html = `<img src="http://openweathermap.org/img/w/${icon}.png" style="display: block; margin: 0 auto;">
+        html = `<img src="https://openweathermap.org/img/w/${icon}.png" style="display: block; margin: 0 auto;">
         <h4 style="text-align: center;">${temp}&deg;</h4><p style="font-size: 12px; text-align:center;">${dayOfWeek}</p>`
         document.getElementById(`forecast${dayCount}`).innerHTML = html;
         dayCount++;
       })
-
   });
   console.log(markers);
 } 
