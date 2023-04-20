@@ -104,7 +104,6 @@ def get_inputs():
 # get user input to make availability prediction
 @app.route("/predicted_availability", methods=["GET"])
 def predict_availability():
-    time.sleep(1)
     x_vars = []
 
     # getting station number

@@ -401,6 +401,10 @@ class AutocompleteDirectionsHandler {
             lng: position.coords.longitude,
           };
 
+          currentLocationWindow = new google.maps.InfoWindow({
+              content: `<div style="color: black;"><p>Current Location</p></div>`,
+          });
+
           currentLocationWindow.setPosition(pos);
           currentLocationWindow.open(map);
           map.setCenter(pos);
@@ -408,13 +412,8 @@ class AutocompleteDirectionsHandler {
           geocoder.geocode( { location: pos}, function(results, status) {
             if (status == 'OK') {
               document.getElementById("origin").value = results[0].formatted_address;
-              currentLocationWindow = new google.maps.InfoWindow({
-                  content: `<div style="color: black;"><p>Current Location</p></div>`,
-              });
             } else {
-                currentLocationWindow = new google.maps.InfoWindow({
-                  content: `<div style="color: black;"><p>Current Location Could Not Be Found</p></div>`,
-              });
+                handleLocationError(true, currentLocationWindow);
                 alert('Geocode was not successful for the following reason: ' + status);
             }
           });
@@ -422,20 +421,14 @@ class AutocompleteDirectionsHandler {
           },
         () => {
           loadingLocationCircle.style.display = "none";
-          currentLocationWindow = new google.maps.InfoWindow({
-                  content: `<div style="color: black;"><p>Current Location Could Not Be Found</p></div>`,
-              });
-          handleLocationError(true, currentLocationWindow, map.getCenter());
+          handleLocationError(true, currentLocationWindow);
         },
           {enableHighAccuracy: true}
       );
     } else {
       // Browser doesn't support Geolocation
       loadingLocationCircle.style.display = "none";
-      currentLocationWindow = new google.maps.InfoWindow({
-                  content: `<div style="color: black;"><p>Current Location Could Not Be Found</p></div>`,
-              });
-      handleLocationError(false, currentLocationWindow, map.getCenter());
+      handleLocationError(false, currentLocationWindow);
     }
     });
   }
@@ -626,13 +619,11 @@ class AutocompleteDirectionsHandler {
 }
 
 // runs if the user doesn't allow their location to be shared or browser does not support geolocation
- function handleLocationError(browserHasGeolocation, currentLocationWindow, pos) {
-    currentLocationWindow.setPosition(pos);
-    currentLocationWindow.setContent(
-      browserHasGeolocation
-        ? "Error: The Geolocation service failed."
-        : "Error: Your browser doesn't support geolocation."
-    );
+ function handleLocationError(browserHasGeolocation, currentLocationWindow) {
+    currentLocationWindow = new google.maps.InfoWindow({
+        content: `<div style="color: black;"><p>Current Location Could Not Be Found</p></div>`,
+    });
+    currentLocationWindow.setPosition({ lat: 53.346077, lng: -6.269475 });
     currentLocationWindow.open(map);
   }
 
@@ -753,7 +744,10 @@ function edgeCases() {
 
 //gets inputs from forecast form
 function startPrediction(event) {
-  event.preventDefault();
+    if (event) {
+        event.preventDefault();
+    }
+
   const form = document.getElementById("forecast_planner");
 
   form.addEventListener("submit", edgeCases());
@@ -795,9 +789,7 @@ function displayForecast(){
     chartContainer.style.display = "none";
   });
 
-  setTimeout(() => {
-    displayCharts(hourly, daily, station_info, chartContainer, loadingChartCircle, headInfo);
-  }, 1000); // delay by 1 second
+  displayCharts(hourly, daily, station_info, chartContainer, loadingChartCircle, headInfo);
 }
 
 
@@ -809,7 +801,7 @@ function displayCharts(hourly, daily, station_info, chartContainer, loadingCircl
     document.getElementById("pred_hourly").style.width = "350px";
     document.getElementById("pred_daily").style.width = "350px";
   }
-
+  setTimeout(() => {
   fetch("/predicted_availability")
     .then((response) => response.json())
     .then((predictions) => {
@@ -896,6 +888,7 @@ function displayCharts(hourly, daily, station_info, chartContainer, loadingCircl
       headInfo.style.justifyContent = "space-between";
       chartContainer.style.display = "block";
   });
+  }, 1000); // delay by 1 second
 }
 
 window.initMap = initMap;
