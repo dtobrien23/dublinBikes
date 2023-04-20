@@ -3,6 +3,11 @@
 }
 
 h1 {
+    margin: 20px 0 5px 0;
+    font-size: 40px;
+}
+
+.inputs h1 {
     margin: 20px 0 5px 30px;
     font-size: 40px;
 }
