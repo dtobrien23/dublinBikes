@@ -90,15 +90,15 @@ function addMarkers(stations, availability) {
     marker.addListener('click', () => {
       // any currently open window will close when another marker is clicked
       if (openStationWindow) {
-          openStationWindow.close();
+        openStationWindow.close();
       }
       marker.stationWindow.open(map, marker);
       openStationWindow = marker.stationWindow;
       document.getElementById("stations").value = marker.title;
       if(document.getElementById("chartContainer").style.display === "block" &&
-          document.getElementById("forecast_date").value !== "" &&
-          document.getElementById("forecast_time").value !== ""){
-          startPrediction()
+        document.getElementById("forecast_date").value !== "" &&
+        document.getElementById("forecast_time").value !== ""){
+        startPrediction()
       }
     });
   });
@@ -401,10 +401,6 @@ class AutocompleteDirectionsHandler {
             lng: position.coords.longitude,
           };
 
-          currentLocationWindow = new google.maps.InfoWindow({
-              content: `<div style="color: black;"><p>Current Location</p></div>`,
-          });
-
           currentLocationWindow.setPosition(pos);
           currentLocationWindow.open(map);
           map.setCenter(pos);
@@ -412,8 +408,13 @@ class AutocompleteDirectionsHandler {
           geocoder.geocode( { location: pos}, function(results, status) {
             if (status == 'OK') {
               document.getElementById("origin").value = results[0].formatted_address;
+              currentLocationWindow = new google.maps.InfoWindow({
+                  content: `<div style="color: black;"><p>Current Location</p></div>`,
+              });
             } else {
-                handleLocationError(true, currentLocationWindow);
+                currentLocationWindow = new google.maps.InfoWindow({
+                  content: `<div style="color: black;"><p>Current Location Could Not Be Found</p></div>`,
+              });
                 alert('Geocode was not successful for the following reason: ' + status);
             }
           });
@@ -421,14 +422,20 @@ class AutocompleteDirectionsHandler {
           },
         () => {
           loadingLocationCircle.style.display = "none";
-          handleLocationError(true, currentLocationWindow);
+          currentLocationWindow = new google.maps.InfoWindow({
+                  content: `<div style="color: black;"><p>Current Location Could Not Be Found</p></div>`,
+              });
+          handleLocationError(true, currentLocationWindow, map.getCenter());
         },
           {enableHighAccuracy: true}
       );
     } else {
       // Browser doesn't support Geolocation
       loadingLocationCircle.style.display = "none";
-      handleLocationError(false, currentLocationWindow);
+      currentLocationWindow = new google.maps.InfoWindow({
+                  content: `<div style="color: black;"><p>Current Location Could Not Be Found</p></div>`,
+              });
+      handleLocationError(false, currentLocationWindow, map.getCenter());
     }
     });
   }
@@ -619,11 +626,13 @@ class AutocompleteDirectionsHandler {
 }
 
 // runs if the user doesn't allow their location to be shared or browser does not support geolocation
- function handleLocationError(browserHasGeolocation, currentLocationWindow) {
-    currentLocationWindow = new google.maps.InfoWindow({
-        content: `<div style="color: black;"><p>Current Location Could Not Be Found</p></div>`,
-    });
-    currentLocationWindow.setPosition({ lat: 53.346077, lng: -6.269475 });
+ function handleLocationError(browserHasGeolocation, currentLocationWindow, pos) {
+    currentLocationWindow.setPosition(pos);
+    currentLocationWindow.setContent(
+      browserHasGeolocation
+        ? "Error: The Geolocation service failed."
+        : "Error: Your browser doesn't support geolocation."
+    );
     currentLocationWindow.open(map);
   }
 
@@ -744,10 +753,7 @@ function edgeCases() {
 
 //gets inputs from forecast form
 function startPrediction(event) {
-    if (event) {
-        event.preventDefault();
-    }
-
+  event.preventDefault();
   const form = document.getElementById("forecast_planner");
 
   form.addEventListener("submit", edgeCases());
@@ -789,9 +795,11 @@ function displayForecast(){
     chartContainer.style.display = "none";
   });
 
-  displayCharts(hourly, daily, station_info, chartContainer, loadingChartCircle, headInfo)
-
+  setTimeout(() => {
+    displayCharts(hourly, daily, station_info, chartContainer, loadingChartCircle, headInfo);
+  }, 1000); // delay by 1 second
 }
+
 
 //creates the charts on the sidebar, the charts have to be destroyed before new ones can be made at the same id
 function displayCharts(hourly, daily, station_info, chartContainer, loadingCircle, headInfo) {
