@@ -112,11 +112,9 @@ function getStationInformation() {
   fetch("/stations")
     .then((response) => response.json())
     .then((stationData) => {
-      console.log("fetch response", typeof stationData);
       fetch("/availability")
         .then((response) => response.json())
         .then((availabilityData) => {
-          console.log("fetch response", typeof availabilityData);
           addMarkers(stationData, availabilityData);
           Object.assign(latestAvailability, availabilityData);
           });
@@ -128,7 +126,6 @@ function getWeatherInformation() {
   fetch("/weather")
     .then((response) => response.json())
     .then((weatherData) => {
-      console.log("fetch response", typeof weatherData);
 
       // current weather 
 
@@ -172,7 +169,6 @@ function getWeatherInformation() {
         dayCount++;
       })
   });
-  console.log(markers);
 } 
 
 getWeatherInformation()
@@ -418,7 +414,6 @@ class AutocompleteDirectionsHandler {
           fetch("/stations")
           .then((response) => response.json())
           .then((stationData) => {
-            console.log("fetch response", typeof stationData);
             fetch("/availability")
             .then((response) => response.json())
             .then((availabilityData) => {
@@ -429,7 +424,6 @@ class AutocompleteDirectionsHandler {
               //gets the lat and lng values for the chosen station from the dropdown
               let glat = this.originLatLng.lat();
               let glng = this.originLatLng.lng();
-              console.log("fetch response", typeof availabilityData);
 
               //flag checks if the user is getting or returning a bike
               if (userHasBikeFlag == true) {
@@ -722,9 +716,6 @@ function startPrediction(event) {
         return response.text();
       }
       throw new Error("Network response was not okay");
-    })
-    .then(data => {
-      console.log(data);
     })
     .catch(error => {
       console.error("Error submitting form", error);
