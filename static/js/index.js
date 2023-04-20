@@ -396,6 +396,10 @@ class AutocompleteDirectionsHandler {
             lng: position.coords.longitude,
           };
 
+          currentLocationWindow = new google.maps.InfoWindow({
+              content: `<div style="color: black;"><p>Current Location</p></div>`,
+          });
+
           currentLocationWindow.setPosition(pos);
           currentLocationWindow.open(map);
           map.setCenter(pos);
@@ -403,13 +407,8 @@ class AutocompleteDirectionsHandler {
           geocoder.geocode( { location: pos}, function(results, status) {
             if (status == 'OK') {
               document.getElementById("origin").value = results[0].formatted_address;
-              currentLocationWindow = new google.maps.InfoWindow({
-                  content: `<div style="color: black;"><p>Current Location</p></div>`,
-              });
             } else {
-                currentLocationWindow = new google.maps.InfoWindow({
-                  content: `<div style="color: black;"><p>Current Location Could Not Be Found</p></div>`,
-              });
+                handleLocationError(true, currentLocationWindow);
                 alert('Geocode was not successful for the following reason: ' + status);
             }
           });
@@ -417,20 +416,14 @@ class AutocompleteDirectionsHandler {
           },
         () => {
           loadingLocationCircle.style.display = "none";
-          currentLocationWindow = new google.maps.InfoWindow({
-                  content: `<div style="color: black;"><p>Current Location Could Not Be Found</p></div>`,
-              });
-          handleLocationError(true, currentLocationWindow, map.getCenter());
+          handleLocationError(true, currentLocationWindow);
         },
           {enableHighAccuracy: true}
       );
     } else {
       // Browser doesn't support Geolocation
       loadingLocationCircle.style.display = "none";
-      currentLocationWindow = new google.maps.InfoWindow({
-                  content: `<div style="color: black;"><p>Current Location Could Not Be Found</p></div>`,
-              });
-      handleLocationError(false, currentLocationWindow, map.getCenter());
+      handleLocationError(false, currentLocationWindow);
     }
     });
   }
@@ -621,13 +614,11 @@ class AutocompleteDirectionsHandler {
 }
 
 // runs if the user doesn't allow their location to be shared or browser does not support geolocation
- function handleLocationError(browserHasGeolocation, currentLocationWindow, pos) {
-    currentLocationWindow.setPosition(pos);
-    currentLocationWindow.setContent(
-      browserHasGeolocation
-        ? "Error: The Geolocation service failed."
-        : "Error: Your browser doesn't support geolocation."
-    );
+ function handleLocationError(browserHasGeolocation, currentLocationWindow) {
+    currentLocationWindow = new google.maps.InfoWindow({
+        content: `<div style="color: black;"><p>Current Location Could Not Be Found</p></div>`,
+    });
+    currentLocationWindow.setPosition({ lat: 53.346077, lng: -6.269475 });
     currentLocationWindow.open(map);
   }
 
