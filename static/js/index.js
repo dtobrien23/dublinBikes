@@ -356,6 +356,9 @@ class AutocompleteDirectionsHandler {
     });
 
     document.getElementById("current_location").addEventListener("click", () => {
+      const loadingLocationCircle = document.getElementById("loading-location-circle");
+      loadingLocationCircle.style.display = "block";
+
       // Try HTML5 geolocation.
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -376,6 +379,7 @@ class AutocompleteDirectionsHandler {
                 alert('Geocode was not successful for the following reason: ' + status);
             }
           });
+          loadingLocationCircle.style.display = "none";
           },
         () => {
           handleLocationError(true, currentLocationWindow, map.getCenter());
@@ -390,6 +394,7 @@ class AutocompleteDirectionsHandler {
   }
 
   setupPlaceChangedListener(autocomplete) {
+    const loadingLocationCircle = document.getElementById("loading-location-circle");
     //dropdown menu will prioritise places in view
     autocomplete.bindTo("bounds", this.map);
     // Ref: https://developers.google.com/maps/documentation/javascript/examples/place-search
@@ -407,6 +412,7 @@ class AutocompleteDirectionsHandler {
       let service = new google.maps.places.PlacesService(this.map);
       service.findPlaceFromQuery(request, (results, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK  && results) {
+          loadingLocationCircle.style.display = "block";
           this.originLatLng = results[0].geometry.location;
 
           //finds the nearest station that has bikes available to the origin address
@@ -503,7 +509,7 @@ class AutocompleteDirectionsHandler {
               // waits until all promises are resolved then this.route() is called
               Promise.all(promises)
                 .then(() => {
-                  this.route();
+                  this.route(loadingLocationCircle);
                 })
                 .catch((error) => {
                   console.error(error);
@@ -513,7 +519,7 @@ class AutocompleteDirectionsHandler {
         }
       });
   }
-  route() {
+  route(loadingLocationCircle) {
     if (!this.originLatLng || !this.destinationLatLng) {
       return;
     }
@@ -538,6 +544,7 @@ class AutocompleteDirectionsHandler {
         } else {
           window.alert("Directions request failed due to " + status);
         }
+        loadingLocationCircle.style.display = "none";
       }
     );
 
@@ -732,24 +739,31 @@ function displayForecast(){
   const chartContainer = document.getElementById("chartContainer");
   chartContainer.style.display = "block";
   const closeCharts = document.getElementById("closeCharts");
+  const headInfo = document.getElementById("headInfo");
+  headInfo.style.justifyContent = "flex-end";
   const hourly = document.getElementById("pred_hourly");
   const daily = document.getElementById("pred_daily");
-  const station_info = document.getElementById("station_info")
+  const station_info = document.getElementById("station_info");
+  station_info.style.display = "none";
+  const loadingChartCircle = document.getElementById("loading-chart-circle");
+  loadingChartCircle.style.display = "block";
 
   closeCharts.addEventListener("click", () => {
     mapDisplay.style.display = "block";
     chartContainer.style.display = "none";
   });
 
-  displayCharts(hourly, daily, station_info)
+  displayCharts(hourly, daily, station_info, chartContainer, loadingChartCircle, headInfo)
 
 }
 
 //creates the charts on the sidebar, the charts have to be destroyed before new ones can be made at the same id
-function displayCharts(hourly, daily, station_info) {
+function displayCharts(hourly, daily, station_info, chartContainer, loadingCircle, headInfo) {
   if (chartsDisplayed) {
     hourlyChart.destroy();
     dailyChart.destroy();
+    document.getElementById("pred_hourly").style.width = "350px";
+    document.getElementById("pred_daily").style.width = "350px";
   }
 
   fetch("/predicted_availability")
@@ -797,8 +811,8 @@ function displayCharts(hourly, daily, station_info) {
               }
             }
           },
-          responsive: false,
-          maintainAspectRatio: false
+          responsive: true,
+          maintainAspectRatio: true
         }
       });
 
@@ -828,11 +842,15 @@ function displayCharts(hourly, daily, station_info) {
               }
             }
           },
-          responsive: false,
-          maintainAspectRatio: false
+          responsive: true,
+          maintainAspectRatio: true
         }
       });
       chartsDisplayed = true;
+      station_info.style.display = "block";
+      loadingCircle.style.display = "none";
+      headInfo.style.justifyContent = "space-between";
+      chartContainer.style.display = "block";
   });
 }
 

@@ -80,6 +80,11 @@ button {
     justify-content: center;
 }
 
+.location_section {
+    display: flex;
+
+}
+
 .location-label {
     margin: 5px;
 }
@@ -87,6 +92,12 @@ button {
 #origin {
     padding: 5px 0 5px 5px;
     display: block;
+    margin: 0 0 0 5px;
+}
+
+#current_location {
+    margin: 0 5px 0 5px;
+    padding:  8px 8px 8px 8px;
 }
 
 .pac-target-input {
@@ -222,7 +233,7 @@ button {
 
 #chartContainer {
     display: none;
-    min-width: 350px;
+    min-width: 380px;
     background-color: white;;
     color: #094e78;
     text-align: left;
@@ -247,10 +258,12 @@ button {
 
 #pred_hourly {
     margin: 20px;
+    width: 350px;
 }
 
 #pred_daily {
     margin: 20px;
+    width: 350px;
 }
 
 #station_info {
@@ -259,10 +272,50 @@ button {
 
 #headInfo {
     display: flex;
-    justify-content: space-between;
-    align-content: center;
 }
 
 #closeCharts{
     height: 10%;
+}
+
+#loading-chart-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 5px solid #ccc;
+    border-top-color: #094e78;
+    animation: spin 1s infinite linear;
+    z-index: 999;
+    position: relative;
+    top: 30%;
+    left: 35%;
+}
+
+#map-container {
+    width: 100%;
+    height: 100%;
+}
+
+#loading-location-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 5px solid #ccc;
+    border-top-color: #094e78;
+    animation: spin 1s infinite linear;
+    position: absolute;
+    top: 40%;
+    left: 60%;
+    z-index: 99999999;
+    display: none;
+}
+
+
+@keyframes spin {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
