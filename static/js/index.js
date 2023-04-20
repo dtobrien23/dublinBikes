@@ -402,7 +402,7 @@ class AutocompleteDirectionsHandler {
           currentLocationWindow.setPosition(pos);
           currentLocationWindow.open(map);
           map.setCenter(pos);
-
+          loadingLocationCircle.style.display = "none";
           geocoder.geocode( { location: pos}, function(results, status) {
             if (status == 'OK') {
               document.getElementById("origin").value = results[0].formatted_address;
@@ -410,15 +410,17 @@ class AutocompleteDirectionsHandler {
                 alert('Geocode was not successful for the following reason: ' + status);
             }
           });
-          loadingLocationCircle.style.display = "none";
+
           },
         () => {
+          loadingLocationCircle.style.display = "none";
           handleLocationError(true, currentLocationWindow, map.getCenter());
         },
           {enableHighAccuracy: true}
       );
     } else {
       // Browser doesn't support Geolocation
+      loadingLocationCircle.style.display = "none";
       handleLocationError(false, currentLocationWindow, map.getCenter());
     }
     });
