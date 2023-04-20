@@ -90,11 +90,16 @@ function addMarkers(stations, availability) {
     marker.addListener('click', () => {
       // any currently open window will close when another marker is clicked
       if (openStationWindow) {
-        openStationWindow.close();
+          openStationWindow.close();
       }
       marker.stationWindow.open(map, marker);
       openStationWindow = marker.stationWindow;
       document.getElementById("stations").value = marker.title;
+      if(document.getElementById("chartContainer").style.display === "block" &&
+          document.getElementById("forecast_date").value !== "" &&
+          document.getElementById("forecast_time").value !== ""){
+          startPrediction()
+      }
     });
   });
 
@@ -739,7 +744,10 @@ function edgeCases() {
 
 //gets inputs from forecast form
 function startPrediction(event) {
-  event.preventDefault();
+    if (event) {
+        event.preventDefault();
+    }
+
   const form = document.getElementById("forecast_planner");
 
   form.addEventListener("submit", edgeCases());
