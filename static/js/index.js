@@ -161,7 +161,7 @@ function getWeatherInformation() {
       let today = new Date(day.dt * 1000);
       let dayOfWeek = today.toLocaleString('en-IE', { weekday: 'long' });
 
-      html = `<img src="http://openweathermap.org/img/w/${icon}.png" style="display: block; margin: 0 auto;">
+      html = `<img src="https://openweathermap.org/img/w/${icon}.png" style="display: block; margin: 0 auto;">
       <h4 style="text-align: center;">${temp}&deg;</h4><p style="font-size: 12px; text-align:center;">${dayOfWeek}</p>`
       document.getElementById("forecast1").innerHTML = html;
 
@@ -171,7 +171,7 @@ function getWeatherInformation() {
       today = new Date(day.dt * 1000);
       dayOfWeek = today.toLocaleString('en-IE', { weekday: 'long' });
 
-      html = `<img src="http://openweathermap.org/img/w/${icon}.png" style="display: block; margin: 0 auto;">
+      html = `<img src="https://openweathermap.org/img/w/${icon}.png" style="display: block; margin: 0 auto;">
       <h4 style="text-align: center;">${temp}&deg;</h4><p style="font-size: 12px; text-align:center;">${dayOfWeek}</p>`
       document.getElementById("forecast2").innerHTML = html;
 
@@ -181,7 +181,7 @@ function getWeatherInformation() {
       today = new Date(day.dt * 1000);
       dayOfWeek = today.toLocaleString('en-IE', { weekday: 'long' });
 
-      html = `<img src="http://openweathermap.org/img/w/${icon}.png" style="display: block; margin: 0 auto;">
+      html = `<img src="https://openweathermap.org/img/w/${icon}.png" style="display: block; margin: 0 auto;">
       <h4 style="text-align: center;">${temp}&deg;</h4><p style="font-size: 12px; text-align:center;">${dayOfWeek}</p>`
       document.getElementById("forecast3").innerHTML = html;
 
@@ -191,7 +191,7 @@ function getWeatherInformation() {
       today = new Date(day.dt * 1000);
       dayOfWeek = today.toLocaleString('en-IE', { weekday: 'long' });
 
-      html = `<img src="http://openweathermap.org/img/w/${icon}.png" style="display: block; margin: 0 auto;">
+      html = `<img src="https://openweathermap.org/img/w/${icon}.png" style="display: block; margin: 0 auto;">
       <h4 style="text-align: center;">${temp}&deg;</h4><p style="font-size: 12px; text-align:center;">${dayOfWeek}</p>`
       document.getElementById("forecast4").innerHTML = html;
 
@@ -201,7 +201,7 @@ function getWeatherInformation() {
       today = new Date(day.dt * 1000);
       dayOfWeek = today.toLocaleString('en-IE', { weekday: 'long' });
 
-      html = `<img src="http://openweathermap.org/img/w/${icon}.png" style="display: block; margin: 0 auto;">
+      html = `<img src="https://openweathermap.org/img/w/${icon}.png" style="display: block; margin: 0 auto;">
       <h4 style="text-align: center;">${temp}&deg;</h4><p style="font-size: 12px; text-align:center;">${dayOfWeek}</p>`
       document.getElementById("forecast5").innerHTML = html;
   });
