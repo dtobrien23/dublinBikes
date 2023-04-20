@@ -743,7 +743,7 @@ function edgeCases() {
 
 
 //gets inputs from forecast form
-async function startPrediction(event) {
+function startPrediction(event) {
     if (event) {
         event.preventDefault();
     }
